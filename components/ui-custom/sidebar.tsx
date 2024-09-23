@@ -22,6 +22,28 @@ export const Sidebar = () => {
               <span>Inicio</span>
             </Link>
           </li>
+          <li>
+            <Link
+              href="/dashboard"
+              className={cn(
+                "text-sm flex items-center gap-4 py-2 px-4 rounded-lg hover:bg-secondary transition-colors duration-300"
+              )}
+            >
+              <House className="h-4 w-4" />
+              <span>Dashboard</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/products"
+              className={cn(
+                "text-sm flex items-center gap-4 py-2 px-4 rounded-lg hover:bg-secondary transition-colors duration-300"
+              )}
+            >
+              <House className="h-4 w-4" />
+              <span>Settings</span>
+            </Link>
+          </li>
         </ul>
       </section>
     </aside>

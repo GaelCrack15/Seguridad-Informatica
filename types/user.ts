@@ -30,3 +30,20 @@ export const formSchemaRegister = z.object({
     message: "La contraseña es requerida",
   }),
 });
+
+export interface NewUser {
+  name: string;
+  email: string;
+  password: string;
+  role?: string; // Opcional, si no siempre se proporciona
+  created_at?: Date; // Opcional para la creación
+  updated_at?: Date; // Opcional para la actualización
+}
+
+export interface UpdateUser {
+  name?: string;
+  email?: string;
+  password?: string;
+  role?: string;
+  updated_at?: Date; // Solo se necesita para saber cuándo fue actualizado
+}

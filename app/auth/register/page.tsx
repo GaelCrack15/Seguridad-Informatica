@@ -4,9 +4,6 @@ import { FormRegister } from "./_components/form-register";
 const RegisterPage = () => {
   return (
     <div className="w-full max-w-md mx-auto">
-      <h1 className="text-2xl font-bold uppercase tracking-widest mb-10">
-        Registrarse
-      </h1>
       <div className="w-full">
         <FormRegister />
       </div>
