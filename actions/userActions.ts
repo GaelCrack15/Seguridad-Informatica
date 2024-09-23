@@ -1,9 +1,10 @@
 "use server";
 
+import { hashPassword } from "@/lib/auth/session";
 import { db } from "@/lib/db/drizzle";
 import { users } from "@/lib/db/schema";
-import { NewUser, UpdateUser } from "@/types/user"; 
-import { eq } from "drizzle-orm"; 
+import { NewUser, UpdateUser } from "@/types/user";
+import { eq } from "drizzle-orm";
 
 // Obtener todos los usuarios
 export const getUsers = async () => {
@@ -12,8 +13,12 @@ export const getUsers = async () => {
 
     return { response: "success", users: usersList };
   } catch (error: unknown) {
-    const errorMessage = (error as { message: string }).message || "Error desconocido";
-    return { response: "error", message: `Error al obtener usuarios: ${errorMessage}` };
+    const errorMessage =
+      (error as { message: string }).message || "Error desconocido";
+    return {
+      response: "error",
+      message: `Error al obtener usuarios: ${errorMessage}`,
+    };
   }
 };
 
@@ -30,16 +35,28 @@ export const addUser = async (userData: NewUser) => {
 
     return { response: "success", user: createdUser };
   } catch (error: unknown) {
-    const errorMessage = (error as { message: string }).message || "Error desconocido";
-    return { response: "error", message: `Error al agregar usuario: ${errorMessage}` };
+    const errorMessage =
+      (error as { message: string }).message || "Error desconocido";
+    return {
+      response: "error",
+      message: `Error al agregar usuario: ${errorMessage}`,
+    };
   }
 };
 
 // Actualizar un usuario
 export const updateUser = async (id: number, userData: UpdateUser) => {
   try {
+    // Extraer la contraseña si existe en userData
+    const { password } = userData;
+
+    // Hashear la contraseña solo si se proporciona
+    const passwordHash = password ? await hashPassword(password) : undefined;
+
+    // Crear un objeto de usuario actualizado, excluyendo la contraseña si no se proporciona
     const updatedUser: UpdateUser = {
       ...userData,
+      ...(passwordHash && { password: passwordHash }), // Solo incluir la contraseña hasheada si existe
       updated_at: new Date(),
     };
 
@@ -51,8 +68,12 @@ export const updateUser = async (id: number, userData: UpdateUser) => {
 
     return { response: "success", user };
   } catch (error: unknown) {
-    const errorMessage = (error as { message: string }).message || "Error desconocido";
-    return { response: "error", message: `Error al actualizar usuario: ${errorMessage}` };
+    const errorMessage =
+      (error as { message: string }).message || "Error desconocido";
+    return {
+      response: "error",
+      message: `Error al actualizar usuario: ${errorMessage}`,
+    };
   }
 };
 
@@ -62,7 +83,11 @@ export const deleteUser = async (id: number) => {
     await db.delete(users).where(eq(users.id, id));
     return { response: "success", message: "Usuario eliminado correctamente." };
   } catch (error: unknown) {
-    const errorMessage = (error as { message: string }).message || "Error desconocido";
-    return { response: "error", message: `Error al eliminar usuario: ${errorMessage}` };
+    const errorMessage =
+      (error as { message: string }).message || "Error desconocido";
+    return {
+      response: "error",
+      message: `Error al eliminar usuario: ${errorMessage}`,
+    };
   }
 };
