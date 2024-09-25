@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { FaDatabase, FaUserShield, FaUsers, FaTwitter, FaFacebook, FaLinkedin } from "react-icons/fa";
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import Image from "next/image";
 
 const fadeIn = {
   hidden: { opacity: 0, scale: 0.8 },
@@ -51,10 +52,12 @@ export default function HomePage() {
               variants={fadeIn}
               transition={{ duration: 0.5, delay: 0.3, ease: "easeInOut" }}
             >
-              <img
+              <Image
                 src="/ruta/a/tu/imagen1.jpg"
                 alt="Descripción de la imagen"
                 className="w-full h-auto rounded-lg shadow-lg"
+                width={800}
+                height={350}
               />
             </motion.div>
           </div>
@@ -110,10 +113,12 @@ export default function HomePage() {
                 variants={fadeIn}
                 transition={{ duration: 0.5, delay: index * 0.2, ease: "easeInOut" }}
               >
-                <img
+                <Image
                   src={`/ruta/a/tu/imagen${index + 5}.jpg`} // Asegúrate de que estas imágenes existan
                   alt={useCase}
                   className="w-full h-48 object-cover rounded-md"
+                  width={800}
+                  height={400}
                 />
                 <h3 className="mt-4 text-lg font-semibold text-gray-900">{useCase}</h3>
                 <p className="mt-2 text-base text-gray-500">
@@ -150,13 +155,13 @@ export default function HomePage() {
             <div>
               <h3 className="text-lg font-semibold text-white">Follow Us</h3>
               <div className="mt-2 flex justify-center space-x-4">
-                <a href="https://twitter.com" className="text-gray-400 hover:text-white">
+                <a href="https://twitter.com" className="text-gray-400 hover:text-white" title="Twitter">
                   <FaTwitter className="h-6 w-6" />
                 </a>
-                <a href="https://facebook.com" className="text-gray-400 hover:text-white">
+                <a href="https://facebook.com" className="text-gray-400 hover:text-white" title="Facebook">
                   <FaFacebook className="h-6 w-6" />
                 </a>
-                <a href="https://linkedin.com" className="text-gray-400 hover:text-white">
+                <a href="https://linkedin.com" className="text-gray-400 hover:text-white" title="LinkedIn">
                   <FaLinkedin className="h-6 w-6" />
                 </a>
               </div>

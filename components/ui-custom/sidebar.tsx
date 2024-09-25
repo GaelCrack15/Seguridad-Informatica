@@ -30,7 +30,7 @@ export const Sidebar = () => {
               )}
             >
               <House className="h-4 w-4" />
-              <span>Dashboard</span>
+              <span>Usuarios</span>
             </Link>
           </li>
           <li>

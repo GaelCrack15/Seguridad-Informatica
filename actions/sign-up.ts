@@ -11,7 +11,7 @@ import { formSchemaRegister } from "@/types/user";
 
 export const signUp = async (values: z.infer<typeof formSchemaRegister>) => {
   try {
-    const { name, email, password } = values;
+    const { full_name, email, password, birthdate, address, phone_number, gender, terms_accepted } = values;
 
     const user = await db
       .select()
@@ -29,10 +29,15 @@ export const signUp = async (values: z.infer<typeof formSchemaRegister>) => {
     const passwordHash = await hashPassword(password);
 
     const newUser: NewUser = {
-      name,
+      full_name,
       email,
       password: passwordHash,
       role: "default",
+      birthdate,
+      address,
+      phone_number,
+      gender,
+      terms_accepted
     };
 
     const [createdUser] = await db.insert(users).values(newUser).returning();
