@@ -2,15 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
-
 import { signIn } from "@/actions/login";
 import { formSchemaLogin } from "@/types/user";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -22,6 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Loader } from "lucide-react";
+import { motion } from "framer-motion"; // Importar Framer Motion
 
 export const FormLogin = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -50,9 +48,31 @@ export const FormLogin = () => {
     }, 1000);
   }
 
+  // Variantes para animación
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
+  const inputVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: { opacity: 1, scale: 1 },
+  };
+
+  const labelVariants = {
+    hidden: { opacity: 0, y: -10 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">Iniciar Sesión</h2>
+    <motion.div 
+      className="flex flex-col items-center justify-center p-8 bg-gradient-to-r from-blue-400 to-purple-500 shadow-lg rounded-lg"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      transition={{ duration: 0.5 }} // Duración de la animación del contenedor
+    >
+      <h2 className="text-3xl font-bold mb-6 text-white text-center">Iniciar Sesión</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 w-full">
           <FormField
@@ -60,15 +80,29 @@ export const FormLogin = () => {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-semibold text-gray-800">Correo electrónico</FormLabel>
+                <motion.div 
+                  variants={labelVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ duration: 0.3 }}
+                >
+                  <FormLabel className="font-semibold text-white">Correo electrónico</FormLabel>
+                </motion.div>
                 <FormControl>
-                  <Input
-                    placeholder="test@test.com"
-                    type="email"
-                    disabled={isLoading}
-                    {...field}
-                    className="border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-                  />
+                  <motion.div
+                    variants={inputVariants}
+                    initial="hidden"
+                    animate="visible"
+                    transition={{ duration: 0.3 }} 
+                  >
+                    <Input
+                      placeholder="test@test.com"
+                      type="email"
+                      disabled={isLoading}
+                      {...field}
+                      className="border-2 border-white rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 transition duration-200 text-gray-900"
+                    />
+                  </motion.div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -79,26 +113,46 @@ export const FormLogin = () => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-semibold text-gray-800">Contraseña</FormLabel>
+                <motion.div 
+                  variants={labelVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ duration: 0.3 }}
+                >
+                  <FormLabel className="font-semibold text-white">Contraseña</FormLabel>
+                </motion.div>
                 <FormControl>
-                  <Input
-                    placeholder="*********"
-                    type="password"
-                    disabled={isLoading}
-                    {...field}
-                    className="border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-                  />
+                  <motion.div
+                    variants={inputVariants}
+                    initial="hidden"
+                    animate="visible"
+                    transition={{ duration: 0.3, delay: 0.1 }} 
+                  >
+                    <Input
+                      placeholder="*********"
+                      type="password"
+                      disabled={isLoading}
+                      {...field}
+                      className="border-2 border-white rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 transition duration-200 text-gray-900"
+                    />
+                  </motion.div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full mt-4 bg-blue-600 text-white hover:bg-blue-700" disabled={isLoading}>
-            {isLoading && <Loader className="w-4 h-4 mr-3 animate-spin" />}
-            Ingresar
-          </Button>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.2, delay: 0.2 }}
+          >
+            <Button type="submit" className="w-full mt-4 bg-yellow-400 text-gray-800 hover:bg-yellow-500 transition duration-200" disabled={isLoading}>
+              {isLoading && <Loader className="w-4 h-4 mr-3 animate-spin" />}
+              Ingresar
+            </Button>
+          </motion.div>
         </form>
       </Form>
-    </div>
+    </motion.div>
   );
 };

@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
-
+import { Button } from "@/components/ui/button";
 import { signUp } from "@/actions/sign-up";
 import { formSchemaRegister } from "@/types/user";
 
@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Loader } from "lucide-react";
 import ModalPrivacy from "@/components/ui-custom/privacy";
 import ModalTerms from "@/components/ui-custom/terms";
+import { motion } from "framer-motion"; // Importar Framer Motion
 
 export const FormRegister = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -68,9 +69,31 @@ export const FormRegister = () => {
     }, 1000);
   }
 
+  // Variantes para animación
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
+  const inputVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: { opacity: 1, scale: 1 },
+  };
+
+  const labelVariants = {
+    hidden: { opacity: 0, y: -10 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center p-6 bg-white shadow-lg rounded-lg max-w-md w-full mx-auto mt-8">
-      <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">
+    <motion.div
+      className="flex flex-col items-center justify-center p-8 bg-gradient-to-r from-blue-400 to-purple-500 shadow-lg rounded-lg"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      transition={{ duration: 0.5 }} // Duración de la animación del contenedor
+    >
+      <h2 className="text-3xl font-bold mb-6 text-white text-center">
         Registro
       </h2>
       <Form {...form}>
@@ -84,16 +107,30 @@ export const FormRegister = () => {
             name="full_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-semibold text-gray-800">
-                  Nombre completo
-                </FormLabel>
+                <motion.div
+                  variants={labelVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ duration: 0.3 }}
+                >
+                  <FormLabel className="font-semibold text-white">
+                    Nombre completo
+                  </FormLabel>
+                </motion.div>
                 <FormControl>
+                  <motion.div
+                    variants={inputVariants}
+                    initial="hidden"
+                    animate="visible"
+                    transition={{ duration: 0.3, delay: 0.1 }} 
+                  >
                   <Input
                     placeholder="Jorge Alberto Valenzuela Castañón"
                     disabled={isLoading}
                     {...field}
                     className="border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 p-2"
                   />
+                  </motion.div>
                 </FormControl>
                 <FormMessage className="text-red-500" />
               </FormItem>
@@ -106,9 +143,16 @@ export const FormRegister = () => {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-semibold text-gray-800">
-                  Correo electrónico
-                </FormLabel>
+                <motion.div
+                  variants={labelVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ duration: 0.3 }}
+                >
+                  <FormLabel className="font-semibold text-white">
+                    Correo electrónico
+                  </FormLabel>
+                </motion.div>
                 <FormControl>
                   <Input
                     placeholder="test@test.com"
@@ -129,9 +173,16 @@ export const FormRegister = () => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-semibold text-gray-800">
-                  Contraseña
-                </FormLabel>
+                <motion.div
+                  variants={labelVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ duration: 0.3 }}
+                >
+                  <FormLabel className="font-semibold text-white">
+                    Contraseña
+                  </FormLabel>
+                </motion.div>
                 <FormControl>
                   <Input
                     placeholder="*********"
@@ -152,9 +203,16 @@ export const FormRegister = () => {
             name="birthdate"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-semibold text-gray-800">
-                  Fecha de nacimiento
-                </FormLabel>
+                <motion.div
+                  variants={labelVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ duration: 0.3 }}
+                >
+                  <FormLabel className="font-semibold text-white">
+                    Fecha de nacimiento
+                  </FormLabel>
+                </motion.div>
                 <FormControl>
                   <Input
                     type="date"
@@ -174,9 +232,16 @@ export const FormRegister = () => {
             name="address"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-semibold text-gray-800">
-                  Dirección
-                </FormLabel>
+                <motion.div
+                  variants={labelVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ duration: 0.3 }}
+                >
+                  <FormLabel className="font-semibold text-white">
+                    Dirección
+                  </FormLabel>
+                </motion.div>
                 <FormControl>
                   <Input
                     placeholder="Ingresa tu dirección"
@@ -196,9 +261,16 @@ export const FormRegister = () => {
             name="phone_number"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-semibold text-gray-800">
-                  Número de teléfono
-                </FormLabel>
+                <motion.div
+                  variants={labelVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ duration: 0.3 }}
+                >
+                  <FormLabel className="font-semibold text-white">
+                    Número de teléfono
+                  </FormLabel>
+                </motion.div>
                 <FormControl>
                   <Input
                     placeholder="(123) 456-7890"
@@ -219,9 +291,16 @@ export const FormRegister = () => {
             name="gender"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-semibold text-gray-800">
-                  Género
-                </FormLabel>
+                <motion.div
+                  variants={labelVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ duration: 0.3 }}
+                >
+                  <FormLabel className="font-semibold text-white">
+                    Género
+                  </FormLabel>
+                </motion.div>
                 <FormControl>
                   <select
                     disabled={isLoading}
@@ -247,42 +326,53 @@ export const FormRegister = () => {
             name="terms_accepted"
             render={({ field }) => (
               <FormItem>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={isTermsAccepted}
-                    readOnly
-                    {...field}
-                    value={field.value ? "true" : "false"}
-                    className="h-4 w-4 border border-gray-300 rounded focus:ring-blue-500"
-                  />
-                  <span className="font-semibold text-gray-800">
-                    Acepto los{" "}
-                    <button
-                      type="button"
-                      onClick={() => setTermsModalOpen(true)}
-                      className="text-blue-600 underline"
-                    >
-                      términos y condiciones
-                    </button>
-                  </span>
-                </div>
+                <motion.div
+                  variants={labelVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={isTermsAccepted}
+                      readOnly
+                      {...field}
+                      value={field.value ? "true" : "false"}
+                      className="h-4 w-4 border border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <span className="font-semibold text-white">
+                      Acepto los{" "}
+                      <button
+                        type="button"
+                        onClick={() => setTermsModalOpen(true)}
+                        className="text-red-300 underline"
+                      >
+                        términos y condiciones
+                      </button>
+                    </span>
+                  </div>
+                </motion.div>
                 <FormMessage className="text-red-500" />
               </FormItem>
             )}
           />
 
           {/* Botón de registro */}
-          <button
-            type="submit"
-            className="w-full mt-4 bg-blue-600 text-white hover:bg-blue-700 transition duration-200 p-2 rounded-md"
-            disabled={isLoading}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.2, delay: 0.2 }}
           >
-            {isLoading && (
-              <Loader className="w-4 h-4 mr-3 animate-spin inline-block" />
-            )}
-            Ingresar
-          </button>
+            <Button
+              type="submit"
+              className="w-full mt-4 bg-yellow-400 text-gray-800 hover:bg-yellow-500 transition duration-200"
+              disabled={isLoading}
+            >
+              {isLoading && <Loader className="w-4 h-4 mr-3 animate-spin" />}
+              Ingresar
+            </Button>
+          </motion.div>
         </form>
       </Form>
 
@@ -290,7 +380,7 @@ export const FormRegister = () => {
       <button
         type="button"
         onClick={() => setPrivacyModalOpen(true)}
-        className="mt-4 text-blue-600 underline"
+        className="mt-4 text-red-300 underline"
       >
         Política de privacidad
       </button>
@@ -306,6 +396,6 @@ export const FormRegister = () => {
         onAccept={handleAcceptTerms}
         onDeny={handleDenyTerms}
       />
-    </div>
+    </motion.div>
   );
 };
