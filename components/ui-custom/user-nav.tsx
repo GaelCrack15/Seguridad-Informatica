@@ -39,12 +39,12 @@ export const UserNav = () => {
               alt="@templatemarketnet"
             />
             <AvatarFallback className="uppercase">
-              {auth?.name?.charAt(0)}
-              {auth?.name?.charAt(1)}
+              {auth?.full_name?.charAt(0)}
+              {auth?.full_name?.charAt(1)}
             </AvatarFallback>
           </Avatar>
           <div className="text-left">
-            <p className="font-medium">{auth?.name}</p>
+            <p className="font-medium">{auth?.full_name}</p>
             <p className="text-xs text-muted-foreground">{auth?.email}</p>
           </div>
         </Button>
@@ -52,7 +52,7 @@ export const UserNav = () => {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{auth?.name}</p>
+            <p className="text-sm font-medium leading-none">{auth?.full_name}</p>
             <p className="text-xs leading-none text-muted-foreground">
               {auth?.email}
             </p>
