@@ -2,7 +2,11 @@
 
 import { Dialog } from "@headlessui/react";
 import { Button } from "@/components/ui/button";
-import { AiOutlineCheck, AiOutlineClose, AiOutlineCloseCircle } from "react-icons/ai"; // Icono de cerrar
+import {
+  AiOutlineCheck,
+  AiOutlineClose,
+  AiOutlineCloseCircle,
+} from "react-icons/ai"; // Icono de cerrar
 
 interface ModalTermsProps {
   isOpen: boolean;
@@ -96,15 +100,15 @@ const ModalTerms = ({ isOpen, onClose, onAccept, onDeny }: ModalTermsProps) => {
               <h2 className="text-xl font-semibold mb-4">6. Ley Aplicable</h2>
               <p className="mb-4">
                 Estos términos se regirán e interpretarán de acuerdo con las
-                leyes de <strong>[País o Estado]</strong>, sin dar efecto a
-                ningún principio de conflictos de leyes.
+                leyes de <strong>México</strong>, sin dar efecto a ningún
+                principio de conflictos de leyes.
               </p>
 
               <h2 className="text-xl font-semibold mb-4">7. Contacto</h2>
               <p className="mb-4">
                 Si tiene alguna pregunta sobre estos términos, no dude en
                 ponerse en contacto con nosotros a través de{" "}
-                <strong>[email de contacto]</strong>.
+                <strong>contacto@adminify.com</strong>.
               </p>
             </div>
           </Dialog.Description>
