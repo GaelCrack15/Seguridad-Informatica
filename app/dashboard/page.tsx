@@ -45,6 +45,7 @@ const DashboardPage = () => {
 
   useEffect(() => {
     // Filtrado por búsqueda
+    // Filtrado por búsqueda
     const results = users.filter(
       (user) =>
         (user.full_name &&
@@ -66,6 +67,8 @@ const DashboardPage = () => {
             .toLowerCase()
             .includes(searchTerm.toLowerCase()))
     );
+    // Ordenar los resultados por ID
+    results.sort((a, b) => a.id - b.id); // Asumiendo que `id` es un número
     setFilteredUsers(results);
   }, [searchTerm, users]);
 
@@ -100,13 +103,20 @@ const DashboardPage = () => {
   } | null>(null);
 
   // Función para manejar cambios de orden
-  const requestSort = useCallback((key: string) => {
-    let direction = "ascending";
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === "ascending") {
-      direction = "descending";
-    }
-    setSortConfig({ key, direction });
-  }, [sortConfig]);
+  const requestSort = useCallback(
+    (key: string) => {
+      let direction = "ascending";
+      if (
+        sortConfig &&
+        sortConfig.key === key &&
+        sortConfig.direction === "ascending"
+      ) {
+        direction = "descending";
+      }
+      setSortConfig({ key, direction });
+    },
+    [sortConfig]
+  );
 
   // Efecto para ordenar usuarios
   useEffect(() => {
@@ -115,8 +125,10 @@ const DashboardPage = () => {
         const aValue = a[sortConfig.key] ?? ""; // Asigna un valor por defecto
         const bValue = b[sortConfig.key] ?? ""; // Asigna un valor por defecto
 
-        if (aValue < bValue) return sortConfig.direction === "ascending" ? -1 : 1;
-        if (aValue > bValue) return sortConfig.direction === "ascending" ? 1 : -1;
+        if (aValue < bValue)
+          return sortConfig.direction === "ascending" ? -1 : 1;
+        if (aValue > bValue)
+          return sortConfig.direction === "ascending" ? 1 : -1;
         return 0;
       });
       setFilteredUsers(sortedUsers);
@@ -126,11 +138,16 @@ const DashboardPage = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const { response, users: fetchedUsers = [], pagination, message = null } = await getUsers(currentPage, rowsPerPage);
+        const {
+          response,
+          users: fetchedUsers = [],
+          pagination,
+          message = null,
+        } = await getUsers(currentPage, rowsPerPage);
         if (response === "success") {
           setUsers(fetchedUsers);
           setFilteredUsers(fetchedUsers);
-  
+
           // Extrae totalUsers y totalPages de pagination
           if (pagination) {
             setTotalUsers(pagination.totalUsers); // Establece el total de usuarios
@@ -145,7 +162,7 @@ const DashboardPage = () => {
         setLoading(false);
       }
     };
-  
+
     fetchUsers();
   }, [currentPage, rowsPerPage]);
 
@@ -213,7 +230,7 @@ const DashboardPage = () => {
         address: address || undefined,
         phone_number: phone_number || undefined,
         gender: gender || undefined,
-        terms_accepted,
+        terms_accepted: true,
       };
       const { response, message } = await updateUser(
         currentUser.id,
@@ -252,7 +269,8 @@ const DashboardPage = () => {
       birthdate: newBirthdate || undefined,
       address: newAddress || undefined,
       phone_number: newPhoneNumber || undefined,
-      gender: newGender || undefined
+      gender: newGender || undefined,
+      terms_accepted: true,
     };
 
     const { response, message, user: addedUser } = await addUser(newUser);
@@ -321,17 +339,17 @@ const DashboardPage = () => {
       return "hace menos de un minuto";
     }
   }
-  
+
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
     setCurrentPage(1); // Resetea a la primera página al cambiar filas por página
   };
-  
+
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages) return; // Verifica límites
     setCurrentPage(newPage);
   };
-  
+
   // Renderiza usuarios actuales
   return (
     <div className="p-6">
