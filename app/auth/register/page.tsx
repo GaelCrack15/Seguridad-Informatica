@@ -4,7 +4,7 @@ import { FormRegister } from "./_components/form-register";
 const RegisterPage = () => {
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="w-full">
+      <div className="w-full rounded-lg" style={{ maxHeight: "80vh", overflowY: "auto" }}>
         <FormRegister />
       </div>
       <div className="mt-5">
