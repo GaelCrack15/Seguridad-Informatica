@@ -63,7 +63,7 @@ export const formSchemaRegister = z.object({
   phone_number: z
     .string()
     .max(15, "El número de teléfono no puede exceder los 15 caracteres")
-    .optional(),
+    .nonempty("El número de teléfono es obligatorio"),
   gender: z.enum(["male", "female", "other"], {
     required_error: "Selecciona un género",
   }),

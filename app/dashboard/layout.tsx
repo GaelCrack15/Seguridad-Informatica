@@ -4,12 +4,15 @@ import { ReactNode } from "react";
 
 const DashboardLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="flex h-[100dvh]">
+    <div className="flex h-screen">
       <Sidebar />
-      <div className="flex-1">
+      <div className="flex-1 flex flex-col">
         <Header />
-        <main className="h-[calc(100%-80px)] overflow-auto p-5">
-          {children}
+        <main className="flex-1 overflow-auto p-5">
+          {/* Contenedor para manejar scroll horizontal */}
+          <div className="overflow-x-auto">
+            {children}
+          </div>
         </main>
       </div>
     </div>
