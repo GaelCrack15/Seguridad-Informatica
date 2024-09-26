@@ -50,7 +50,7 @@ export const FormRegister = () => {
       address: "",
       phone_number: "",
       gender: undefined,
-      terms_accepted: true,
+      terms_accepted: false,
     },
   });
 
@@ -68,6 +68,15 @@ export const FormRegister = () => {
       setIsLoading(false);
     }, 1000);
   }
+
+  // Función para manejar el cambio del checkbox
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      toast.error("Lea antes los términos y condiciones");
+    } else {
+      setIsTermsAccepted(false);
+    }
+  };
 
   // Variantes para animación
   const containerVariants = {
@@ -336,9 +345,7 @@ export const FormRegister = () => {
                     <input
                       type="checkbox"
                       checked={isTermsAccepted}
-                      readOnly
-                      {...field}
-                      value={field.value ? "true" : "false"}
+                      onChange={handleCheckboxChange} // Cambiar aquí
                       className="h-4 w-4 border border-gray-300 rounded focus:ring-blue-500"
                     />
                     <span className="font-semibold text-white">

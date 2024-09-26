@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import Image from "next/image";
 import { useState } from "react";
 import ModalPrivacy from "@/components/ui-custom/privacy";
+import ModalTerms2 from "@/components/ui-custom/terms2";
 
 const fadeIn = {
   hidden: { opacity: 0, scale: 0.8 },
@@ -22,6 +23,7 @@ const slideIn = {
 
 export default function HomePage() {
   const [isPrivacyModalOpen, setPrivacyModalOpen] = useState(false);
+  const [isTermsModalOpen, setTermsModalOpen] = useState(false);
   return (
     <main>
       <section className="py-20 bg-blue-100">
@@ -45,6 +47,12 @@ export default function HomePage() {
                 <Link href="/auth/register">
                   <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full text-lg px-8 py-4 inline-flex items-center justify-center transition-all duration-300 transform hover:scale-105">
                     Comenzar
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <Link href="/auth/login">
+                  <Button className="bg-gray-400 hover:bg-gray-500 text-white rounded-full text-lg px-8 py-4 ml-5 inline-flex items-center justify-center transition-all duration-300 transform hover:scale-105">
+                    Login
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
@@ -172,21 +180,28 @@ export default function HomePage() {
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-white">Términos y Condiciones</h3>
+              <h3 className="text-lg font-semibold text-white">Políticas</h3>
               <div className="mt-2 flex justify-center space-x-4">
                 <ul className="mt-2 text-gray-400">
                   <li className="text-gray-400 hover:text-white">
-
-                    
-      
+                  <button
+                    type="button"
+                    onClick={() => setTermsModalOpen(true)}
+                  >
+                    Términos y condiciones
+                  </button>
+                  <ModalTerms2
+                    isOpen={isTermsModalOpen}
+                    onClose={() => setTermsModalOpen(false)}
+                  />
                   </li>
                   <li className="text-gray-400 hover:text-white">
                     <button
                       type="button"
                       onClick={() => setPrivacyModalOpen(true)}
                     >
-                      Política de privacidad
-                    </button>
+                      Aviso de privacidad
+                    </button> 
                     <ModalPrivacy
                       isOpen={isPrivacyModalOpen}
                       onClose={() => setPrivacyModalOpen(false)}
