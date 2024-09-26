@@ -5,6 +5,8 @@ import { FaDatabase, FaUserShield, FaUsers, FaTwitter, FaFacebook, FaLinkedin } 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Image from "next/image";
+import { useState } from "react";
+import ModalPrivacy from "@/components/ui-custom/privacy";
 
 const fadeIn = {
   hidden: { opacity: 0, scale: 0.8 },
@@ -16,7 +18,10 @@ const slideIn = {
   visible: { x: 0, opacity: 1 },
 };
 
+
+
 export default function HomePage() {
+  const [isPrivacyModalOpen, setPrivacyModalOpen] = useState(false);
   return (
     <main>
       <section className="py-20 bg-blue-100">
@@ -53,8 +58,8 @@ export default function HomePage() {
               transition={{ duration: 0.5, delay: 0.3, ease: "easeInOut" }}
             >
               <Image
-                src="/ruta/a/tu/imagen1.jpg"
-                alt="Descripción de la imagen"
+                src="/UsersHeader.jpg"
+                alt="Adminify"
                 className="w-full h-auto rounded-lg shadow-lg"
                 width={800}
                 height={350}
@@ -104,9 +109,13 @@ export default function HomePage() {
             <p className="mt-3 text-lg text-gray-500">Check out how Adminify works in real-life scenarios.</p>
           </div>
           <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {["Caso de uso 1", "Caso de uso 2", "Caso de uso 3"].map((useCase, index) => (
+            {[
+              { title: "Efficiency", image: "/eficiencia.jpg", description: "See how Adminify improves efficiency in managing teams." },
+              { title: "Product Managment", image: "/gestion.png", description: "Experience seamless product management with Adminify." },
+              { title: "Security", image: "/seguridad-datos.jpg", description: "Learn how Adminify secures your business data effectively." }
+            ].map((useCase, index) => (
               <motion.div
-                key={useCase}
+                key={useCase.title}
                 className="bg-white shadow-lg rounded-lg p-6 hover:shadow-xl transition-shadow duration-300"
                 initial="hidden"
                 animate="visible"
@@ -114,18 +123,14 @@ export default function HomePage() {
                 transition={{ duration: 0.5, delay: index * 0.2, ease: "easeInOut" }}
               >
                 <Image
-                  src={`/ruta/a/tu/imagen${index + 5}.jpg`} // Asegúrate de que estas imágenes existan
-                  alt={useCase}
+                  src={useCase.image}
+                  alt={useCase.title}
                   className="w-full h-48 object-cover rounded-md"
                   width={800}
                   height={400}
                 />
-                <h3 className="mt-4 text-lg font-semibold text-gray-900">{useCase}</h3>
-                <p className="mt-2 text-base text-gray-500">
-                  {index === 0 && "See how Adminify improves efficiency in managing teams."}
-                  {index === 1 && "Experience seamless product management with Adminify."}
-                  {index === 2 && "Learn how Adminify secures your business data effectively."}
-                </p>
+                <h3 className="mt-4 text-lg font-semibold text-gray-900">{useCase.title}</h3>
+                <p className="mt-2 text-base text-gray-500">{useCase.description}</p>
               </motion.div>
             ))}
           </div>
@@ -134,7 +139,7 @@ export default function HomePage() {
 
       <footer className="py-10 bg-blue-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <h3 className="text-lg font-semibold text-white">About Adminify</h3>
               <p className="mt-2 text-base text-gray-400 hover:text-white">
@@ -148,7 +153,7 @@ export default function HomePage() {
                   <Link href="/auth/login">Login</Link>
                 </li>
                 <li className="text-gray-400 hover:text-white">
-                  <Link href="/auth/signup">Sign Up</Link>
+                  <Link href="/auth/register">Sign Up</Link>
                 </li>
               </ul>
             </div>
@@ -164,6 +169,31 @@ export default function HomePage() {
                 <a href="https://linkedin.com" className="text-gray-400 hover:text-white" title="LinkedIn">
                   <FaLinkedin className="h-6 w-6" />
                 </a>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-white">Terms and conditions</h3>
+              <div className="mt-2 flex justify-center space-x-4">
+                <ul className="mt-2 text-gray-400">
+                  <li className="text-gray-400 hover:text-white">
+
+                    
+      
+                  </li>
+                  <li className="text-gray-400 hover:text-white">
+                    <button
+                      type="button"
+                      onClick={() => setPrivacyModalOpen(true)}
+                    >
+                      Política de privacidad
+                    </button>
+                    <ModalPrivacy
+                      isOpen={isPrivacyModalOpen}
+                      onClose={() => setPrivacyModalOpen(false)}
+                    />
+
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
