@@ -61,14 +61,10 @@ export const UserNav = () => {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/profile">
+            <Link href="/settings">
               <i className="fi fi-rr-user mr-2"></i>
               <span>Perfil</span>
             </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <i className="fi fi-rr-settings mr-2"></i>
-            <span>Ajustes</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

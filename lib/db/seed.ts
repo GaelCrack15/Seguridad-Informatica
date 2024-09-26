@@ -11,10 +11,10 @@ async function seed() {
     .insert(users)
     .values([
       {
-        name: "Admin",
+        full_name: "Admin",
         email: email,
         password: passwordHash,
-        role: "owner",
+        role: "admin",
       },
     ])
     .returning();
