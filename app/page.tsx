@@ -36,15 +36,15 @@ export default function HomePage() {
             >
               <h1 className="text-4xl font-bold text-gray-900 tracking-tight sm:text-5xl md:text-6xl">
                 Adminify
-                <span className="block text-blue-500">Faster Than Ever</span>
+                <span className="block text-blue-500">Más Rápido Que Nunca</span>
               </h1>
               <p className="mt-3 text-base text-gray-700 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
-                Manage your employees and products securely with our platform, designed for efficiency and safety.
+               Gestione a sus empleados y productos de manera segura con nuestra plataforma diseñada para la eficacia y la seguridad
               </p>
               <div className="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0">
                 <Link href="/auth/register">
                   <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full text-lg px-8 py-4 inline-flex items-center justify-center transition-all duration-300 transform hover:scale-105">
-                    Get Started
+                    Comenzar
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
@@ -73,11 +73,11 @@ export default function HomePage() {
       <section className="py-16 bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">Main Features</h2>
-            <p className="mt-3 text-lg text-gray-500">Explore the key benefits of Adminify that make your work easier.</p>
+            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">Características Principales</h2>
+            <p className="mt-3 text-lg text-gray-500">Explore los beneficios principales de Adminify que ocasiona que su trabajo sea más fácil.</p>
           </div>
           <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {["Employee Management", "Product Management", "Secure Login & Sign Up"].map((feature, index) => (
+            {["Gestión de Empleados", "Gestión de Productos", "Inicio de sesión y registro seguros"].map((feature, index) => (
               <motion.div
                 key={feature}
                 className="bg-white shadow-lg rounded-lg p-6 flex flex-col items-center hover:shadow-xl transition-shadow duration-300"
@@ -92,8 +92,8 @@ export default function HomePage() {
                 <h3 className="mt-4 text-lg font-semibold text-gray-900">{feature}</h3>
                 <p className="mt-2 text-base text-gray-500">
                   {index === 0 && "Efficiently manage your team with our user-friendly interface."}
-                  {index === 1 && "Keep track of your products effortlessly and securely."}
-                  {index === 2 && "Protect your data with our robust authentication features."}
+                  {index === 1 && "Haga un seguimiento de sus productos sin esfuerzo y de forma segura."}
+                  {index === 2 && "Proteja sus datos con nuestras sólidas funciones de autenticación."}
                 </p>
               </motion.div>
             ))}
@@ -105,14 +105,14 @@ export default function HomePage() {
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">See Adminify in Action</h2>
-            <p className="mt-3 text-lg text-gray-500">Check out how Adminify works in real-life scenarios.</p>
+            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">¡Vea a "Adminify" en acción!</h2>
+            <p className="mt-3 text-lg text-gray-500">Observe cómo Adminify trabaja con escenarios de la vida real.</p>
           </div>
           <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { title: "Efficiency", image: "/eficiencia.jpg", description: "See how Adminify improves efficiency in managing teams." },
-              { title: "Product Managment", image: "/gestion.png", description: "Experience seamless product management with Adminify." },
-              { title: "Security", image: "/seguridad-datos.jpg", description: "Learn how Adminify secures your business data effectively." }
+              { title: "Eficiencia", image: "/eficiencia.jpg", description: "Vea cómo Adminify mejora la eficiencia in managing teams." },
+              { title: "Gestión de Productos", image: "/gestion.png", description: "Experience seamless product management with Adminify." },
+              { title: "Seguridad", image: "/seguridad-datos.jpg", description: "Descubra cómo Adminify protege los datos de su empresa de forma efectiva." }
             ].map((useCase, index) => (
               <motion.div
                 key={useCase.title}
@@ -141,24 +141,24 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-lg font-semibold text-white">About Adminify</h3>
+              <h3 className="text-lg font-semibold text-white">Acerca de Adminify</h3>
               <p className="mt-2 text-base text-gray-400 hover:text-white">
-                Adminify is your all-in-one solution for managing employee and product data securely, ensuring efficient operations and a safe user experience.
+                Adminify es su solución todo en uno para gestionar los datos de empleados y productos de forma segura, garantizando operaciones eficientes y una experiencia de usuario segura.
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-white">Quick Links</h3>
+              <h3 className="text-lg font-semibold text-white">Acceso Rápido</h3>
               <ul className="mt-2 text-gray-400">
                 <li className="text-gray-400 hover:text-white">
-                  <Link href="/auth/login">Login</Link>
+                  <Link href="/auth/login">Inicie Sesión</Link>
                 </li>
                 <li className="text-gray-400 hover:text-white">
-                  <Link href="/auth/register">Sign Up</Link>
+                  <Link href="/auth/register">Regítrese</Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-white">Follow Us</h3>
+              <h3 className="text-lg font-semibold text-white">Síganos</h3>
               <div className="mt-2 flex justify-center space-x-4">
                 <a href="https://twitter.com" className="text-gray-400 hover:text-white" title="Twitter">
                   <FaTwitter className="h-6 w-6" />
@@ -172,7 +172,7 @@ export default function HomePage() {
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-white">Terms and conditions</h3>
+              <h3 className="text-lg font-semibold text-white">Términos y Condiciones</h3>
               <div className="mt-2 flex justify-center space-x-4">
                 <ul className="mt-2 text-gray-400">
                   <li className="text-gray-400 hover:text-white">
@@ -197,7 +197,7 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          <p className="mt-8 text-sm text-gray-400">&copy; 2024 Adminify. All rights reserved.</p>
+          <p className="mt-8 text-sm text-gray-400">&copy; 2024 Adminify. Todos los derechos reservados</p>
         </div>
       </footer>
     </main>
