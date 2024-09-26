@@ -42,7 +42,7 @@ export const FormLogin = () => {
     } else {
       toast.error(res?.message);
     }
-
+    
     setTimeout(() => {
       setIsLoading(false);
     }, 1000);

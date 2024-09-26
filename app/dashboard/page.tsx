@@ -7,9 +7,11 @@ import {
   updateUser,
   addUser,
 } from "@/actions/userActions"; // Asegúrate de que addUser esté disponible
-import { FaCheck, FaEdit, FaTimes } from "react-icons/fa";
+import { FaCheck, FaEdit, FaSpinner, FaTimes } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/use-auth"; // Tu hook personalizado para la autenticación
+import { useRouter } from "next/navigation";
 
 // Define la interfaz de User
 interface User {
@@ -30,6 +32,7 @@ interface User {
 }
 
 const DashboardPage = () => {
+  const { auth } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,6 +45,21 @@ const DashboardPage = () => {
   // Variables de paginación
   const indexOfLastUser = currentPage * rowsPerPage;
   const indexOfFirstUser = indexOfLastUser - rowsPerPage;
+
+  const router = useRouter();
+
+  // Validar si el usuario no es admin y redirigir
+  useEffect(() => {
+    if (auth && auth.role === "admin") {
+      // No hacer nada si el usuario es admin
+    } else if (auth && auth.role === "distribuidor") {
+      router.replace("/products"); // Redirigir a la página de inicio si no es admin
+    } else if (auth && auth.role === "cliente") {
+      router.replace("/settings"); // Redirigir a la página de configuración si no
+    } else {
+      router.replace("/"); // Redirigir a la página de configuración si no
+    }
+  }, [auth, router]);
 
   useEffect(() => {
     // Filtrado por búsqueda
@@ -200,7 +218,21 @@ const DashboardPage = () => {
     }
   }, [currentUser]);
 
-  if (loading) return <div className="text-center">Cargando...</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="flex flex-col items-center bg-white p-6 rounded-lg shadow-lg">
+          <FaSpinner className="animate-spin text-blue-500 mb-3" size={36} />
+          <span className="text-lg font-semibold text-gray-700">
+            Cargando...
+          </span>
+          <p className="text-sm text-gray-500 mt-1">
+            Por favor, espera mientras cargamos los datos.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const handleEdit = (user: User) => {
     setCurrentUser(user);
@@ -230,7 +262,7 @@ const DashboardPage = () => {
         address: address || undefined,
         phone_number: phone_number || undefined,
         gender: gender || undefined,
-        terms_accepted: true,
+        terms_accepted: terms_accepted || undefined,
       };
       const { response, message } = await updateUser(
         currentUser.id,
@@ -350,10 +382,15 @@ const DashboardPage = () => {
     setCurrentPage(newPage);
   };
 
+  // Mostrar un mensaje de carga o nada mientras se verifica el auth
+  if (!auth || auth.role !== "admin") {
+    return null; // O puedes mostrar un spinner o mensaje de acceso restringido
+  }
+
   // Renderiza usuarios actuales
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Página de Dashboard</h1>
+      <h1 className="text-2xl font-bold mb-4">Gestion de Usuarios</h1>
 
       {/* Botón para agregar nuevo usuario */}
       <div className="flex justify-between items-center mb-4">
@@ -373,133 +410,139 @@ const DashboardPage = () => {
         />
       </div>
       {/*Tabla de usuarios*/}
-      <table className="min-w-full table-auto bg-white shadow-lg rounded-lg border border-gray-300">
-        <thead className="bg-gray-100">
-          <tr>
-            <th
-              className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
-              onClick={() => requestSort("id")}
-            >
-              ID
-            </th>
-            <th
-              className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
-              onClick={() => requestSort("full_name")}
-            >
-              Nombre
-            </th>
-            <th
-              className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
-              onClick={() => requestSort("email")}
-            >
-              Email
-            </th>
-            <th
-              className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
-              onClick={() => requestSort("role")}
-            >
-              Rol
-            </th>
-            <th
-              className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
-              onClick={() => requestSort("birthdate")}
-            >
-              Fecha de Nacimiento
-            </th>
-            <th
-              className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
-              onClick={() => requestSort("address")}
-            >
-              Dirección
-            </th>
-            <th
-              className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
-              onClick={() => requestSort("phone_number")}
-            >
-              Número de Teléfono
-            </th>
-            <th
-              className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
-              onClick={() => requestSort("gender")}
-            >
-              Género
-            </th>
-            <th
-              className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
-              onClick={() => requestSort("terms_accepted")}
-            >
-              Términos Aceptados
-            </th>
-            <th
-              className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
-              onClick={() => requestSort("createdAt")}
-            >
-              Fecha de Creación
-            </th>
-            <th
-              className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
-              onClick={() => requestSort("updatedAt")}
-            >
-              Última Modificación
-            </th>
-            <th className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider">
-              Acciones
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredUsers.map((user) => (
-            <tr key={user.id} className="hover:bg-gray-50">
-              <td className="py-3 px-6 border-b border-gray-300">{user.id}</td>
-              <td className="py-3 px-6 border-b border-gray-300">
-                {user.full_name}
-              </td>
-              <td className="py-3 px-6 border-b border-gray-300">
-                {user.email}
-              </td>
-              <td className="py-3 px-6 border-b border-gray-300">
-                {user.role}
-              </td>
-              <td className="py-3 px-6 border-b border-gray-300">
-                {user.birthdate ? formatDate(user.birthdate.toString()) : "N/A"}
-              </td>
-              <td className="py-3 px-6 border-b border-gray-300">
-                {user.address}
-              </td>
-              <td className="py-3 px-6 border-b border-gray-300">
-                {user.phone_number}
-              </td>
-              <td className="py-3 px-6 border-b border-gray-300">
-                {user.gender}
-              </td>
-              <td className="py-3 px-6 border-b border-gray-300">
-                {user.terms_accepted ? "Sí" : "No"}
-              </td>
-              <td className="py-3 px-6 border-b border-gray-300">
-                {formatDateTime(user.createdAt.toString())}
-              </td>
-              <td className="py-3 px-6 border-b border-gray-300">
-                {formatTime(user.updatedAt.toString())}
-              </td>
-              <td className="py-3 px-6 flex flex-col items-center space-y-2">
-                <button
-                  onClick={() => handleEdit(user)}
-                  className="w-full text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2 transition duration-300 ease-in-out flex items-center justify-center"
-                >
-                  <FaEdit className="mr-2" size={20} /> Editar
-                </button>
-
-                <button
-                  onClick={() => handleDelete(user.id)}
-                  className="w-full text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 transition duration-300 ease-in-out flex items-center justify-center"
-                >
-                  <MdDelete className="mr-2" size={20} /> Eliminar
-                </button>
-              </td>
+      <div className="relative w-full overflow-auto">
+        <table className="w-full caption-bottom text-sm">
+          <thead className="bg-gray-100">
+            <tr>
+              <th
+                className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
+                onClick={() => requestSort("id")}
+              >
+                ID
+              </th>
+              <th
+                className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
+                onClick={() => requestSort("full_name")}
+              >
+                Nombre
+              </th>
+              <th
+                className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
+                onClick={() => requestSort("email")}
+              >
+                Email
+              </th>
+              <th
+                className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
+                onClick={() => requestSort("role")}
+              >
+                Rol
+              </th>
+              <th
+                className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
+                onClick={() => requestSort("birthdate")}
+              >
+                Fecha de Nacimiento
+              </th>
+              <th
+                className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
+                onClick={() => requestSort("address")}
+              >
+                Dirección
+              </th>
+              <th
+                className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
+                onClick={() => requestSort("phone_number")}
+              >
+                Número de Teléfono
+              </th>
+              <th
+                className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
+                onClick={() => requestSort("gender")}
+              >
+                Género
+              </th>
+              <th
+                className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
+                onClick={() => requestSort("terms_accepted")}
+              >
+                Términos Aceptados
+              </th>
+              <th
+                className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
+                onClick={() => requestSort("createdAt")}
+              >
+                Fecha de Creación
+              </th>
+              <th
+                className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider cursor-pointer"
+                onClick={() => requestSort("updatedAt")}
+              >
+                Última Modificación
+              </th>
+              <th className="py-3 px-6 border-b-2 border-gray-300 font-semibold text-left text-gray-700 uppercase tracking-wider">
+                Acciones
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredUsers.map((user) => (
+              <tr key={user.id} className="hover:bg-gray-50">
+                <td className="py-3 px-6 border-b border-gray-300">
+                  {user.id}
+                </td>
+                <td className="py-3 px-6 border-b border-gray-300">
+                  {user.full_name}
+                </td>
+                <td className="py-3 px-6 border-b border-gray-300">
+                  {user.email}
+                </td>
+                <td className="py-3 px-6 border-b border-gray-300">
+                  {user.role}
+                </td>
+                <td className="py-3 px-6 border-b border-gray-300">
+                  {user.birthdate
+                    ? formatDate(user.birthdate.toString())
+                    : "N/A"}
+                </td>
+                <td className="py-3 px-6 border-b border-gray-300">
+                  {user.address}
+                </td>
+                <td className="py-3 px-6 border-b border-gray-300">
+                  {user.phone_number}
+                </td>
+                <td className="py-3 px-6 border-b border-gray-300">
+                  {user.gender}
+                </td>
+                <td className="py-3 px-6 border-b border-gray-300">
+                  {user.terms_accepted ? "Sí" : "No"}
+                </td>
+                <td className="py-3 px-6 border-b border-gray-300">
+                  {formatDateTime(user.createdAt.toString())}
+                </td>
+                <td className="py-3 px-6 border-b border-gray-300">
+                  {formatTime(user.updatedAt.toString())}
+                </td>
+                <td className="py-3 px-6 flex flex-col items-center space-y-2">
+                  <button
+                    onClick={() => handleEdit(user)}
+                    className="w-full text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2 transition duration-300 ease-in-out flex items-center justify-center"
+                  >
+                    <FaEdit className="mr-2" size={20} /> Editar
+                  </button>
+
+                  <button
+                    onClick={() => handleDelete(user.id)}
+                    className="w-full text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 transition duration-300 ease-in-out flex items-center justify-center"
+                  >
+                    <MdDelete className="mr-2" size={20} /> Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {/* Paginación */}
       <div className="flex justify-between items-center mt-6">
         {/* Botón de página anterior */}
@@ -670,7 +713,6 @@ const DashboardPage = () => {
             <input
               type="password"
               placeholder="Contraseña"
-              value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />

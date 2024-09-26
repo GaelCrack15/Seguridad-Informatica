@@ -5,7 +5,9 @@ import {
   text,
   timestamp,
   date,
-  boolean
+  boolean,
+  decimal,
+  integer
   //   integer,
 } from "drizzle-orm/pg-core";
 // import { relations } from "drizzle-orm";
@@ -28,3 +30,17 @@ export const users = pgTable("users", {
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
+
+export const products = pgTable("products", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 100 }).notNull(),
+  description: text("description"),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(), // Precio con dos decimales
+  stock: integer("stock").notNull().default(0), // Cantidad en stock
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  deletedAt: timestamp("deleted_at"),
+});
+
+export type Product = typeof products.$inferSelect;
+export type NewProduct = typeof products.$inferInsert;
