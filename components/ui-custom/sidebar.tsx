@@ -1,11 +1,15 @@
+"use client";
+
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 import { House } from "lucide-react";
-
+import { useAuth } from "@/hooks/use-auth";
 import { Logo } from "@/components/ui-custom/logo";
 
 export const Sidebar = () => {
+  const { auth } = useAuth();
+
   return (
     <aside className="h-full w-56 p-5 border-r border-border">
       <section>
@@ -22,17 +26,19 @@ export const Sidebar = () => {
               <span>Inicio</span>
             </Link>
           </li>
-          <li>
-            <Link
-              href="/dashboard"
-              className={cn(
-                "text-sm flex items-center gap-4 py-2 px-4 rounded-lg hover:bg-secondary transition-colors duration-300"
-              )}
-            >
-              <House className="h-4 w-4" />
-              <span>Usuarios</span>
-            </Link>
-          </li>
+          {auth?.role === "admin" && (
+            <li>
+              <Link
+                href="/dashboard"
+                className={cn(
+                  "text-sm flex items-center gap-4 py-2 px-4 rounded-lg hover:bg-secondary transition-colors duration-300"
+                )}
+              >
+                <House className="h-4 w-4" />
+                <span>Usuarios</span>
+              </Link>
+            </li>
+          )}
           <li>
             <Link
               href="/products"
