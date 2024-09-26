@@ -4,7 +4,7 @@ import { FormLogin } from "./_components/form-login";
 const LoginPage = () => {
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="w-full">
+      <div className="w-full rounded-lg" style={{ maxHeight: "80vh", overflowY: "auto" }}>
         <FormLogin />
       </div>
       <div className="mt-5">
