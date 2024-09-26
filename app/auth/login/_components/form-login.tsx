@@ -15,16 +15,16 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Loader } from "lucide-react";
 import { motion } from "framer-motion"; // Importar Framer Motion
+import { AiOutlineExclamationCircle } from "react-icons/ai";
 
 export const FormLogin = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
-  
+
   const form = useForm<z.infer<typeof formSchemaLogin>>({
     resolver: zodResolver(formSchemaLogin),
     defaultValues: {
@@ -42,7 +42,7 @@ export const FormLogin = () => {
     } else {
       toast.error(res?.message);
     }
-    
+
     setTimeout(() => {
       setIsLoading(false);
     }, 1000);
@@ -64,36 +64,47 @@ export const FormLogin = () => {
     visible: { opacity: 1, y: 0 },
   };
 
+  const {
+    formState: { errors },
+  } = form; // Obtener los errores desde formState
+
   return (
-    <motion.div 
+    <motion.div
       className="flex flex-col items-center justify-center p-8 bg-gradient-to-r from-blue-400 to-purple-500 shadow-lg rounded-lg"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
       transition={{ duration: 0.5 }} // Duración de la animación del contenedor
     >
-      <h2 className="text-3xl font-bold mb-6 text-white text-center">Iniciar Sesión</h2>
+      <h2 className="text-3xl font-bold mb-6 text-white text-center">
+        Iniciar Sesión
+      </h2>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 w-full">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-5 w-full"
+        >
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
-                <motion.div 
+                <motion.div
                   variants={labelVariants}
                   initial="hidden"
                   animate="visible"
                   transition={{ duration: 0.3 }}
                 >
-                  <FormLabel className="font-semibold text-white">Correo electrónico</FormLabel>
+                  <FormLabel className="font-semibold text-white">
+                    Correo electrónico
+                  </FormLabel>
                 </motion.div>
                 <FormControl>
                   <motion.div
                     variants={inputVariants}
                     initial="hidden"
                     animate="visible"
-                    transition={{ duration: 0.3 }} 
+                    transition={{ duration: 0.3 }}
                   >
                     <Input
                       placeholder="test@test.com"
@@ -104,7 +115,21 @@ export const FormLogin = () => {
                     />
                   </motion.div>
                 </FormControl>
-                <FormMessage />
+                {errors.email && ( // Verifica si hay un error para email
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+                  >
+                    <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                    {errors.email && (
+                      <span className="text-sm font-medium">
+                        {errors.email.message}
+                      </span>
+                    )}
+                  </motion.div>
+                )}
               </FormItem>
             )}
           />
@@ -113,20 +138,22 @@ export const FormLogin = () => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <motion.div 
+                <motion.div
                   variants={labelVariants}
                   initial="hidden"
                   animate="visible"
                   transition={{ duration: 0.3 }}
                 >
-                  <FormLabel className="font-semibold text-white">Contraseña</FormLabel>
+                  <FormLabel className="font-semibold text-white">
+                    Contraseña
+                  </FormLabel>
                 </motion.div>
                 <FormControl>
                   <motion.div
                     variants={inputVariants}
                     initial="hidden"
                     animate="visible"
-                    transition={{ duration: 0.3, delay: 0.1 }} 
+                    transition={{ duration: 0.3, delay: 0.1 }}
                   >
                     <Input
                       placeholder="*********"
@@ -137,16 +164,34 @@ export const FormLogin = () => {
                     />
                   </motion.div>
                 </FormControl>
-                <FormMessage />
+                {errors.password && ( // Verifica si hay un error para password
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+                  >
+                    <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                    {errors.password && (
+                      <span className="text-sm font-medium">
+                        {errors.password.message}
+                      </span>
+                    )}
+                  </motion.div>
+                )}
               </FormItem>
             )}
           />
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.2, delay: 0.2 }}
           >
-            <Button type="submit" className="w-full mt-4 bg-yellow-400 text-gray-800 hover:bg-yellow-500 transition duration-200" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full mt-4 bg-yellow-400 text-gray-800 hover:bg-yellow-500 transition duration-200"
+              disabled={isLoading}
+            >
               {isLoading && <Loader className="w-4 h-4 mr-3 animate-spin" />}
               Ingresar
             </Button>

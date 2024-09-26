@@ -339,7 +339,7 @@ const DashboardPage = () => {
 
         <input
           type="text"
-          placeholder="Buscar por nombre o email..."
+          placeholder="Buscar por nombre o descripcion..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="border border-gray-300 rounded-lg px-4 py-2 w-full max-w-xs focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out shadow-sm"
