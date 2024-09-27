@@ -27,7 +27,7 @@ export const UserNav = () => {
     setAuth(null);
     await signOut();
     await signOut2();
-    router.push("/");
+    router.push("/dashboard");
   }
 
 
