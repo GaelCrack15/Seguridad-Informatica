@@ -5,7 +5,7 @@ import { db } from "@/lib/db/drizzle";
 import { users } from "@/lib/db/schema";
 import { NewUser, UpdateUser } from "@/types/user";
 import { eq } from "drizzle-orm";
-import { count } from 'drizzle-orm';
+import { count, asc } from 'drizzle-orm';
 
 
 // Obtener usuarios con paginación
@@ -18,7 +18,8 @@ export const getUsers = async (page: number, limit: number) => {
       .select()
       .from(users)
       .limit(limit)
-      .offset(offset);
+      .offset(offset)
+      .orderBy(asc(users.id));
 
     // Obtener el total de usuarios
     const totalUsersResult = await db.select({ count: count() }).from(users);
