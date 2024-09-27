@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { use, useEffect } from "react";
 
 export const UserNav = () => {
   const router = useRouter();
@@ -27,6 +28,8 @@ export const UserNav = () => {
     await signOut();
     router.push("/");
   }
+
+  
 
   return (
     <DropdownMenu>
