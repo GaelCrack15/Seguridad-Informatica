@@ -3,6 +3,7 @@
 import { Dialog } from "@headlessui/react";
 import { motion } from "framer-motion";
 import { AiOutlineClose } from "react-icons/ai";
+import { signIn } from "@/actions/login";
 import ReCAPTCHA from "react-google-recaptcha";
 
 interface CaptchaModalProps {
@@ -17,6 +18,15 @@ const CaptchaModal = ({
   onCaptchaVerify,
 }: CaptchaModalProps) => {
   const TEST_SITE_KEY = "6LcmH3gpAAAAAJMyOYQ3i5K6O8pJ_apRs84A4nOg";
+
+  const handleCaptchaVerify = (token: string | null) => {
+    if (token) {
+      onCaptchaVerify(token);
+      setTimeout(() => {
+        onClose();
+      }, 300);
+    }
+  };
 
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
@@ -52,8 +62,12 @@ const CaptchaModal = ({
                 <p className="mb-4">
                   Por favor, completa el siguiente Captcha para continuar.
                 </p>
-
-                <ReCAPTCHA sitekey={TEST_SITE_KEY} onChange={onCaptchaVerify} />
+                <div className="flex justify-center">
+                  <ReCAPTCHA
+                    sitekey={TEST_SITE_KEY}
+                    onChange={handleCaptchaVerify}
+                  />
+                </div>
               </div>
             </Dialog.Description>
           </div>
@@ -62,5 +76,6 @@ const CaptchaModal = ({
     </Dialog>
   );
 };
+
 
 export default CaptchaModal;
