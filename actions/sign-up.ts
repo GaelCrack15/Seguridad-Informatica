@@ -32,7 +32,7 @@ export const signUp = async (values: z.infer<typeof formSchemaRegister>) => {
       full_name,
       email,
       password: passwordHash,
-      role: "default",
+      role: "cliente",
       birthdate,
       address,
       phone_number,
