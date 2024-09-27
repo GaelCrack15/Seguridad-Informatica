@@ -46,9 +46,11 @@ const UserSettings = () => {
       gender: gender || undefined,
     };
 
-    // Solo agregar la nueva contraseña si no está vacía
+    // Solo agregar la contraseña si hay un valor en el input
     if (password) {
       updatedUser.password = password; // Solo agregar si la contraseña no está vacía
+    } else {
+      delete updatedUser.password; // Eliminar la propiedad si está vacía
     }
 
     if (!auth) {
