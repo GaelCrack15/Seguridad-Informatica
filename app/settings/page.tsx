@@ -7,6 +7,7 @@ import { updateUser } from "@/actions/userActions"; // Asegúrate de que updateU
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const UserSettings = () => {
   const { auth } = useAuth();
@@ -20,6 +21,15 @@ const UserSettings = () => {
   const [gender, setGender] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (auth && (auth.role === "cliente" || auth.role === "distribuidor" || auth.role === "admin")) {
+      // No hacer nada si el usuario es un distribuidor
+    } else if (!auth) {
+      router.replace("/"); // Redirigir a la página de configuración si no
+    }
+  }, [auth, router]);
 
   // Cargar datos del usuario autenticado
   useEffect(() => {
@@ -70,6 +80,11 @@ const UserSettings = () => {
     }
   };
 
+  // Mostrar un mensaje de carga o nada mientras se verifica el auth
+  if (!auth || (auth.role !== "admin" && auth.role !== "distribuidor" && auth.role !== "cliente")) {
+    return null; // O puedes mostrar un spinner o mensaje de acceso restringido
+  }
+
   return (
     <motion.div
       className="max-w-md mx-auto p-4 bg-white rounded-lg shadow-xl overflow-y-auto max-h-screen"
@@ -94,7 +109,7 @@ const UserSettings = () => {
           placeholder="Nombre"
           value={full_name}
           onChange={(e) => setName(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black transition duration-200"
           required
         />
         <input
@@ -102,48 +117,48 @@ const UserSettings = () => {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black transition duration-200"
           required
         />
         <input
           type="password"
           placeholder="Contraseña"
           onChange={(e) => setPassword(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black transition duration-200"
         />
         <input
           type="text"
           placeholder="Rol"
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black transition duration-200"
         />
         <input
           type="date"
           placeholder="Fecha de Nacimiento"
           value={birthdate}
           onChange={(e) => setBirthdate(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black transition duration-200"
         />
         <input
           type="text"
           placeholder="Dirección"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black transition duration-200"
         />
         <input
           type="tel"
           placeholder="Número de Teléfono"
           value={phone_number}
           onChange={(e) => setPhoneNumber(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black transition duration-200"
         />
         <select
           title="Género"
           value={gender}
           onChange={(e) => setGender(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black transition duration-200"
         >
           <option value="">Seleccionar Género</option>
           <option value="male">Masculino</option>

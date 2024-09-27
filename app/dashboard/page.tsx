@@ -442,7 +442,7 @@ const DashboardPage = () => {
   // Renderiza usuarios actuales
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Gestion de Usuarios</h1>
+      <h1 className="text-2xl font-bold mb-4">Gestión de Usuarios</h1>
 
       {/* Botón para agregar nuevo usuario */}
       <div className="flex justify-between items-center mb-4">

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/hooks/use-auth";
-import { signOut } from "@/actions/sign-out";
+import { signOut, signOut2 } from "@/actions/sign-out";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -26,10 +26,11 @@ export const UserNav = () => {
   async function handleSignOut() {
     setAuth(null);
     await signOut();
-    router.push("/");
+    await signOut2();
+    router.push("/dashboard");
   }
 
-  
+
 
   return (
     <DropdownMenu>
