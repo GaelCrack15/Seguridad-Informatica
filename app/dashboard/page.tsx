@@ -448,7 +448,7 @@ const DashboardPage = () => {
       <div className="flex justify-between items-center mb-4">
         <button
           onClick={() => setIsAdding(true)}
-          className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-400"
+          className="bg-transparent hover:bg-black hover:text-white text-black border border-black font-semibold px-4 py-3 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-black focus:bg-black focus:text-white"
         >
           Agregar Usuario
         </button>
@@ -651,7 +651,7 @@ const DashboardPage = () => {
                 placeholder="Nombre"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black"
               />
               {errors.full_name && (
                 <motion.div
@@ -674,7 +674,7 @@ const DashboardPage = () => {
                 placeholder="Email"
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
-                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black"
               />
               {errors.email && (
                 <motion.div
@@ -695,7 +695,7 @@ const DashboardPage = () => {
                 placeholder="Contraseña"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black"
               />
               {errors.password && (
                 <motion.div
@@ -716,7 +716,7 @@ const DashboardPage = () => {
                 placeholder="Rol"
                 value={newRole}
                 onChange={(e) => setNewRole(e.target.value)}
-                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black"
               />
               {errors.role && (
                 <motion.div
@@ -737,7 +737,7 @@ const DashboardPage = () => {
                 placeholder="Fecha de Nacimiento"
                 value={newBirthdate || ""}
                 onChange={(e) => setNewBirthdate(e.target.value)}
-                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black"
               />
               {errors.birthdate && (
                 <motion.div
@@ -760,7 +760,7 @@ const DashboardPage = () => {
                 placeholder="Dirección"
                 value={newAddress || ""}
                 onChange={(e) => setNewAddress(e.target.value)}
-                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black"
               />
               {errors.address && (
                 <motion.div
@@ -781,7 +781,7 @@ const DashboardPage = () => {
                 placeholder="Número de Teléfono"
                 value={newPhoneNumber || ""}
                 onChange={(e) => setNewPhoneNumber(e.target.value)}
-                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black"
               />
               {errors.phone_number && (
                 <motion.div
@@ -803,7 +803,7 @@ const DashboardPage = () => {
                 title="Género"
                 value={newGender || ""}
                 onChange={(e) => setNewGender(e.target.value)}
-                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black"
               >
                 <option value="" disabled>
                   Seleccionar Género
@@ -828,7 +828,7 @@ const DashboardPage = () => {
             <div className="flex justify-end">
               <button
                 onClick={handleAddUser}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
+                className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
               >
                 Agregar
               </button>

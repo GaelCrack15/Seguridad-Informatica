@@ -72,23 +72,23 @@ const UserSettings = () => {
 
   return (
     <motion.div
-      className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg"
+      className="max-w-md mx-auto p-4 bg-white rounded-lg shadow-xl overflow-y-auto max-h-screen"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.3 }}
     >
-      <h2 className="text-2xl font-bold mb-4 text-center">
+      <h2 className="text-xl font-bold mb-2 text-center">
         Configuración de Usuario
       </h2>
       {loading && (
-        <div className="flex items-center justify-center mb-4">
+        <div className="flex items-center justify-center mb-2">
           <FaSpinner className="animate-spin text-blue-500 mr-2" size={24} />
           <span>Cargando...</span>
         </div>
       )}
-      {error && <div className="text-red-500 mb-4">{error}</div>}
-      <form onSubmit={handleUpdate} className="space-y-4">
+      {error && <div className="text-red-500 mb-2">{error}</div>}
+      <form onSubmit={handleUpdate} className="space-y-2">
         <input
           type="text"
           placeholder="Nombre"
