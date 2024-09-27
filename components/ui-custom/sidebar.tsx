@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { House } from "lucide-react";
+import { House, Package, User, Users } from "lucide-react";
 import { Logo } from "@/components/ui-custom/logo";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -38,7 +38,7 @@ export const Sidebar = () => {
                     "flex items-center gap-4 py-3 px-4 rounded-lg text-gray-800 hover:bg-secondary transition-colors duration-300"
                   )}
                 >
-                  <House className="h-5 w-5" />
+                  <Users className="h-5 w-5" />
                   <span>Usuarios</span>
                 </Link>
               </li>
@@ -53,7 +53,7 @@ export const Sidebar = () => {
                     "flex items-center gap-4 py-3 px-4 rounded-lg text-gray-800 hover:bg-secondary transition-colors duration-300"
                   )}
                 >
-                  <House className="h-5 w-5" />
+                  <Package className="h-5 w-5" />
                   <span>Productos</span>
                 </Link>
               </li>
@@ -67,7 +67,7 @@ export const Sidebar = () => {
                   "flex items-center gap-4 py-3 px-4 rounded-lg text-gray-800 hover:bg-secondary transition-colors duration-300"
                 )}
               >
-                <House className="h-5 w-5" />
+                <User className="h-5 w-5" />
                 <span>Perfil</span>
               </Link>
             </li>
