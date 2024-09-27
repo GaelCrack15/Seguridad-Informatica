@@ -52,7 +52,7 @@ export default function HomePage() {
                 </Link>
                 <Link href="/auth/login">
                   <Button className="bg-gray-400 hover:bg-gray-500 text-white rounded-full text-lg px-8 py-4 ml-5 inline-flex items-center justify-center transition-all duration-300 transform hover:scale-105">
-                    Login
+                    Iniciar sesión
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>

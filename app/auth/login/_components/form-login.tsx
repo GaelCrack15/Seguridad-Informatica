@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Loader } from "lucide-react";
-import { motion } from "framer-motion"; // Importar Framer Motion
+import { motion } from "framer-motion";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
 import CaptchaModal from "@/components/ui-custom/captcha";
 
@@ -36,30 +36,42 @@ export const FormLogin = () => {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchemaLogin>) {
+  const onSubmit = async (values: z.infer<typeof formSchemaLogin>) => {
+    setIsLoading(true);
+
     if (!captchaToken) {
-      setIsCaptchaOpen(true);
+      setIsCaptchaOpen(true); // Abre el modal si no hay Captcha token
+      setIsLoading(false); // Deten la animación si no hay Captcha
       return;
     }
 
-    setIsLoading(true);
-    const res = await signIn(values);
+    const res = await signIn(values); // Llamada para iniciar sesión
 
     if (res?.response === "success") {
-      router.push("/dashboard");
+      router.push("/dashboard"); // Redirige al dashboard si es exitoso
     } else {
-      toast.error(res?.message);
+      toast.error(res?.message); // Muestra mensaje de error
     }
 
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-  }
+    setIsLoading(false); // Deten la animación de carga
+  };
 
-  const onCaptchaVerify = (token: string | null) => {
-    setCaptchaToken(token);
+  // Verificación del Captcha
+  const handleCaptchaSubmit = (token: string | null) => {
+    if (token) {
+      setCaptchaToken(token); // Guarda el token del Captcha
+      setIsCaptchaOpen(false); // Cierra el modal
+      form.handleSubmit(onSubmit)(); // Hace submit al formulario
+    } else {
+      toast.error("Captcha no verificado. Inténtalo de nuevo.");
+    }
+  };
+
+  const handleCaptchaClose = () => {
     setIsCaptchaOpen(false);
-    form.handleSubmit(onSubmit)();
+    if (captchaToken) {
+      form.handleSubmit(onSubmit)();
+    }
   };
 
   const {
@@ -101,11 +113,9 @@ export const FormLogin = () => {
                 {errors.email && (
                   <div className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2">
                     <AiOutlineExclamationCircle className="mr-1 text-red-600" />
-                    {errors.email && (
-                      <span className="text-sm font-medium">
-                        {errors.email.message}
-                      </span>
-                    )}
+                    <span className="text-sm font-medium">
+                      {errors.email.message}
+                    </span>
                   </div>
                 )}
               </FormItem>
@@ -131,11 +141,9 @@ export const FormLogin = () => {
                 {errors.password && (
                   <div className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2">
                     <AiOutlineExclamationCircle className="mr-1 text-red-600" />
-                    {errors.password && (
-                      <span className="text-sm font-medium">
-                        {errors.password.message}
-                      </span>
-                    )}
+                    <span className="text-sm font-medium">
+                      {errors.password.message}
+                    </span>
                   </div>
                 )}
               </FormItem>
@@ -162,8 +170,8 @@ export const FormLogin = () => {
       {/* Modal para el captcha */}
       <CaptchaModal
         isOpen={isCaptchaOpen}
-        onClose={() => setIsCaptchaOpen(false)}
-        onCaptchaVerify={onCaptchaVerify}
+        onClose={handleCaptchaClose} // Usa el onClose modificado
+        onCaptchaVerify={handleCaptchaSubmit} // Usa el método de verificación del captcha
       />
     </motion.div>
   );
