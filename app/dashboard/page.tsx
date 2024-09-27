@@ -7,11 +7,14 @@ import {
   updateUser,
   addUser,
 } from "@/actions/userActions"; // Asegúrate de que addUser esté disponible
-import { FaCheck, FaEdit, FaSpinner, FaTimes } from "react-icons/fa";
+import { FaCheck, FaEdit, FaSpinner } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth"; // Tu hook personalizado para la autenticación
 import { useRouter } from "next/navigation";
+import { formSchemaEdit, formSchemaRegister } from "@/types/user";
+import { motion } from "framer-motion";
+import { AiOutlineClose, AiOutlineExclamationCircle } from "react-icons/ai";
 
 // Define la interfaz de User
 interface User {
@@ -41,6 +44,7 @@ const DashboardPage = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({}); // Estado para los errores
 
   // Variables de paginación
   const indexOfLastUser = currentPage * rowsPerPage;
@@ -63,28 +67,29 @@ const DashboardPage = () => {
 
   useEffect(() => {
     // Filtrado por búsqueda
-    // Filtrado por búsqueda
-    const results = users.filter(
-      (user) =>
-        (user.full_name &&
-          user.full_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (user.role &&
-          user.role.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (user.birthdate &&
-          user.birthdate.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (user.address &&
-          user.address.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (user.phone_number &&
-          user.phone_number.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (user.gender &&
-          user.gender.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (user.terms_accepted &&
-          user.terms_accepted
-            .toString()
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()))
-    );
+    const results = users.filter((user) => {
+      return (
+        user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        false ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        false ||
+        user.role?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        false ||
+        user.birthdate?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        false ||
+        user.address?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        false ||
+        user.phone_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        false ||
+        user.gender?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        false ||
+        user.terms_accepted
+          ?.toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        false
+      );
+    });
     // Ordenar los resultados por ID
     results.sort((a, b) => a.id - b.id); // Asumiendo que `id` es un número
     setFilteredUsers(results);
@@ -256,38 +261,65 @@ const DashboardPage = () => {
         ...currentUser,
         full_name,
         email,
-        password,
         role,
-        birthdate: birthdate || undefined, // Ensure birthdate is string or undefined
+        birthdate: birthdate || undefined, // Asegúrate de que birthdate sea un string o undefined
         address: address || undefined,
         phone_number: phone_number || undefined,
         gender: gender || undefined,
         terms_accepted: terms_accepted || undefined,
       };
-      const { response, message } = await updateUser(
-        currentUser.id,
-        updatedUser
-      );
 
-      if (response === "success") {
-        setUsers(
-          users.map((user) =>
-            user.id === currentUser.id
-              ? { ...updatedUser, updatedAt: new Date() }
-              : user
-          )
-        );
-        setFilteredUsers(
-          filteredUsers.map((user) =>
-            user.id === currentUser.id
-              ? { ...updatedUser, updatedAt: new Date() }
-              : user
-          )
-        );
-        setIsEditing(false); // Cerrar el modal
-        setPassword(""); // Limpiar la contraseña
+      // Solo agregar la contraseña si hay un valor en el input
+      if (password) {
+        updatedUser.password = password; // Solo agregar si la contraseña no está vacía
       } else {
-        toast.error(message);
+        delete updatedUser.password; // Eliminar la propiedad si está vacía
+      }
+
+      try {
+        const result = formSchemaEdit.safeParse(updatedUser);
+
+        if (!result.success) {
+          // Si hay errores, establecerlos en el estado
+          const fieldErrors = result.error.errors.reduce((acc, error) => {
+            acc[error.path[0]] = error.message; // Mapear el error al campo correspondiente
+            return acc;
+          }, {} as { [key: string]: string });
+
+          setErrors(fieldErrors);
+          return; // Salir si hay errores
+        }
+
+        // Llamar a la función para actualizar el usuario
+        const { response, message } = await updateUser(
+          currentUser.id,
+          updatedUser
+        );
+
+        if (response === "success") {
+          // Actualizar el estado de los usuarios
+          setUsers(
+            users.map((user) =>
+              user.id === currentUser.id
+                ? { ...updatedUser, updatedAt: new Date() }
+                : user
+            )
+          );
+          setFilteredUsers(
+            filteredUsers.map((user) =>
+              user.id === currentUser.id
+                ? { ...updatedUser, updatedAt: new Date() }
+                : user
+            )
+          );
+          setIsEditing(false); // Cerrar el modal
+          setPassword(""); // Limpiar el input de la contraseña
+        } else {
+          toast.error(message); // Mostrar mensaje de error
+        }
+      } catch (error) {
+        console.error(error); // Usar el error de alguna manera
+        toast.error("Ocurrió un error inesperado");
       }
     }
   };
@@ -296,8 +328,8 @@ const DashboardPage = () => {
     const newUser = {
       full_name: newName,
       email: newEmail,
-      password: newPassword, // Asegúrate de que newPassword esté definido
       role: newRole,
+      password,
       birthdate: newBirthdate || undefined,
       address: newAddress || undefined,
       phone_number: newPhoneNumber || undefined,
@@ -305,23 +337,43 @@ const DashboardPage = () => {
       terms_accepted: true,
     };
 
-    const { response, message, user: addedUser } = await addUser(newUser);
+    try {
+      // Validar el nuevo usuario usando el esquema de Zod
+      const result = formSchemaRegister.safeParse(newUser);
 
-    // Verifica que addedUser tenga un valor válido antes de usarlo
-    if (response === "success" && addedUser) {
-      setUsers([...users, addedUser]);
-      setFilteredUsers([...filteredUsers, addedUser]);
-      setNewName(""); // Limpiar el campo de nombre
-      setNewEmail(""); // Limpiar el campo de email
-      setNewPassword(""); // Limpiar el campo de contraseña
-      setNewRole(""); // Limpiar el campo de rol
-      setNewBirthdate(""); // Limpiar el campo de fecha de nacimiento
-      setNewAddress(""); // Limpiar el campo de dirección
-      setNewPhoneNumber(""); // Limpiar el campo de número de teléfono
-      setNewGender(""); // Limpiar el campo de género
-      setIsAdding(false); // Cerrar el modal de agregar
-    } else {
-      toast.error(message);
+      if (!result.success) {
+        // Si hay errores, establecerlos en el estado
+        const fieldErrors = result.error.errors.reduce((acc, error) => {
+          acc[error.path[0]] = error.message; // Mapear el error al campo correspondiente
+          return acc;
+        }, {} as { [key: string]: string });
+
+        setErrors(fieldErrors);
+        return; // Salir si hay errores
+      }
+
+      const { response, message, user: addedUser } = await addUser(newUser);
+
+      if (response === "success" && addedUser) {
+        setUsers([...users, addedUser]);
+        setFilteredUsers([...filteredUsers, addedUser]);
+        // Reiniciar todos los campos después de agregar exitosamente
+        setNewName("");
+        setNewEmail("");
+        setNewPassword(""); // Limpiar la nueva contraseña
+        setNewRole("");
+        setNewBirthdate("");
+        setNewAddress("");
+        setNewPhoneNumber("");
+        setNewGender("");
+        setIsAdding(false);
+        setErrors({}); // Limpiar errores al agregar con éxito
+      } else {
+        toast.error(message);
+      }
+    } catch (error) {
+      console.error(error); // Usar el error de alguna manera
+      toast.error("Ocurrió un error inesperado");
     }
   };
 
@@ -597,86 +649,199 @@ const DashboardPage = () => {
       {/* Modal para agregar un nuevo usuario */}
       {isAdding && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 transition-opacity duration-300">
-          <div className="bg-white p-8 rounded-lg shadow-lg transform transition-transform duration-300 scale-95 hover:scale-100">
+          <div className="bg-white p-8 rounded-lg shadow-lg transform transition-transform duration-300 scale-95 hover:scale-100 w-[50vw] ">
             <h2 className="text-xl font-bold mb-4">Agregar Nuevo Usuario</h2>
 
-            <input
-              type="text"
-              placeholder="Nombre"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <input
-              type="email"
-              placeholder="Email"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-              className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <input
-              type="password"
-              placeholder="Contraseña"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <input
-              type="text"
-              placeholder="Rol"
-              value={newRole}
-              onChange={(e) => setNewRole(e.target.value)}
-              className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <input
-              type="date"
-              placeholder="Fecha de Nacimiento"
-              value={newBirthdate || ""}
-              onChange={(e) => setNewBirthdate(e.target.value)}
-              className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <input
-              type="text"
-              placeholder="Dirección"
-              value={newAddress || ""}
-              onChange={(e) => setNewAddress(e.target.value)}
-              className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <input
-              type="tel"
-              placeholder="Número de Teléfono"
-              value={newPhoneNumber || ""}
-              onChange={(e) => setNewPhoneNumber(e.target.value)}
-              className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <select
-              title="Género"
-              value={newGender || ""}
-              onChange={(e) => setNewGender(e.target.value)}
-              className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            {/* Ícono de cerrar en la esquina superior derecha */}
+            <button
+              title="Cerrar"
+              onClick={() => setIsAdding(false)}
+              className="p-5 absolute top-2 right-2 text-gray-500 hover:text-gray-700"
             >
-              <option value="" disabled>
-                Seleccionar Género
-              </option>
-              <option value="male">Masculino</option>
-              <option value="female">Femenino</option>
-              <option value="otro">Otro</option>
-            </select>
+              <AiOutlineClose size={24} />
+            </button>
+
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Nombre"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.full_name && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+                >
+                  <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                  <span className="text-sm font-medium">
+                    {errors.full_name}
+                  </span>
+                </motion.div>
+              )}
+            </div>
+
+            <div className="mb-4">
+              <input
+                type="email"
+                placeholder="Email"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.email && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+                >
+                  <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                  <span className="text-sm font-medium">{errors.email}</span>
+                </motion.div>
+              )}
+            </div>
+
+            <div className="mb-4">
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.password && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+                >
+                  <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                  <span className="text-sm font-medium">{errors.password}</span>
+                </motion.div>
+              )}
+            </div>
+
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Rol"
+                value={newRole}
+                onChange={(e) => setNewRole(e.target.value)}
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.role && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+                >
+                  <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                  <span className="text-sm font-medium">{errors.role}</span>
+                </motion.div>
+              )}
+            </div>
+
+            <div className="mb-4">
+              <input
+                type="date"
+                placeholder="Fecha de Nacimiento"
+                value={newBirthdate || ""}
+                onChange={(e) => setNewBirthdate(e.target.value)}
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.birthdate && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+                >
+                  <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                  <span className="text-sm font-medium">
+                    {errors.birthdate}
+                  </span>
+                </motion.div>
+              )}
+            </div>
+
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Dirección"
+                value={newAddress || ""}
+                onChange={(e) => setNewAddress(e.target.value)}
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.address && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+                >
+                  <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                  <span className="text-sm font-medium">{errors.address}</span>
+                </motion.div>
+              )}
+            </div>
+
+            <div className="mb-4">
+              <input
+                type="tel"
+                placeholder="Número de Teléfono"
+                value={newPhoneNumber || ""}
+                onChange={(e) => setNewPhoneNumber(e.target.value)}
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.phone_number && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+                >
+                  <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                  <span className="text-sm font-medium">
+                    {errors.phone_number}
+                  </span>
+                </motion.div>
+              )}
+            </div>
+
+            <div className="mb-4">
+              <select
+                title="Género"
+                value={newGender || ""}
+                onChange={(e) => setNewGender(e.target.value)}
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="" disabled>
+                  Seleccionar Género
+                </option>
+                <option value="male">Masculino</option>
+                <option value="female">Femenino</option>
+                <option value="otro">Otro</option>
+              </select>
+              {errors.gender && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+                >
+                  <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                  <span className="text-sm font-medium">{errors.gender}</span>
+                </motion.div>
+              )}
+            </div>
 
             <div className="flex justify-end">
-              <button
-                onClick={() => setIsAdding(false)}
-                className="bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 hover:bg-gray-400 transition duration-200"
-              >
-                Cancelar
-              </button>
               <button
                 onClick={handleAddUser}
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
@@ -691,86 +856,206 @@ const DashboardPage = () => {
       {/* Modal para editar usuario */}
       {isEditing && currentUser && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 transition-opacity duration-300">
-          <div className="bg-white p-8 rounded-lg shadow-lg transform transition-transform duration-300 scale-95 hover:scale-100">
+          <div className="bg-white p-8 rounded-lg shadow-lg transform transition-transform duration-300 scale-95 hover:scale-100 w-[50vw] ">
             <h2 className="text-xl font-bold mb-4">Editar Usuario</h2>
 
-            <input
-              type="text"
-              placeholder="Nombre"
-              value={full_name}
-              onChange={(e) => setName(e.target.value)}
-              className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <input
-              type="password"
-              placeholder="Contraseña"
-              onChange={(e) => setPassword(e.target.value)}
-              className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <input
-              type="text"
-              placeholder="Rol"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <input
-              type="date"
-              placeholder="Fecha de Nacimiento"
-              value={birthdate}
-              onChange={(e) => setBirthdate(e.target.value)}
-              className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <input
-              type="text"
-              placeholder="Dirección"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <input
-              type="tel"
-              placeholder="Número de Teléfono"
-              value={phone_number}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <select
-              title="Género"
-              value={gender || ""}
-              onChange={(e) => setGender(e.target.value)}
-              className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            {/* Ícono de cerrar en la esquina superior derecha */}
+            <button
+              title="Cerrar"
+              onClick={() => setIsEditing(false)}
+              className="p-5 absolute top-2 right-2 text-gray-500 hover:text-gray-700"
             >
-              <option value="" disabled>
-                Seleccionar Género
-              </option>
-              <option value="male">Masculino</option>
-              <option value="female">Femenino</option>
-              <option value="other">Otro</option>
-            </select>
+              <AiOutlineClose size={24} />
+            </button>
+
+            {/* Campo para Nombre */}
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Nombre"
+                value={full_name}
+                onChange={(e) => setName(e.target.value)}
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.full_name && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+                >
+                  <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                  <span className="text-sm font-medium">
+                    {errors.full_name}
+                  </span>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Campo para Email */}
+            <div className="mb-4">
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.email && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+                >
+                  <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                  <span className="text-sm font-medium">{errors.email}</span>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Campo para Contraseña */}
+            <div className="mb-4">
+              <input
+                type="password"
+                placeholder="Contraseña"
+                onChange={(e) => setPassword(e.target.value)}
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.password && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+                >
+                  <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                  <span className="text-sm font-medium">{errors.password}</span>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Campo para Rol */}
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Rol"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.role && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+                >
+                  <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                  <span className="text-sm font-medium">{errors.role}</span>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Campo para Fecha de Nacimiento */}
+            <div className="mb-4">
+              <input
+                type="date"
+                placeholder="Fecha de Nacimiento"
+                value={birthdate}
+                onChange={(e) => setBirthdate(e.target.value)}
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.birthdate && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+                >
+                  <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                  <span className="text-sm font-medium">
+                    {errors.birthdate}
+                  </span>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Campo para Dirección */}
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Dirección"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.address && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+                >
+                  <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                  <span className="text-sm font-medium">{errors.address}</span>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Campo para Número de Teléfono */}
+            <div className="mb-4">
+              <input
+                type="tel"
+                placeholder="Número de Teléfono"
+                value={phone_number}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.phone_number && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+                >
+                  <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                  <span className="text-sm font-medium">
+                    {errors.phone_number}
+                  </span>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Campo para Género */}
+            <div className="mb-4">
+              <select
+                title="Género"
+                value={gender || ""}
+                onChange={(e) => setGender(e.target.value)}
+                className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="" disabled>
+                  Seleccionar Género
+                </option>
+                <option value="male">Masculino</option>
+                <option value="female">Femenino</option>
+                <option value="other">Otro</option>
+              </select>
+              {errors.gender && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+                >
+                  <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                  <span className="text-sm font-medium">{errors.gender}</span>
+                </motion.div>
+              )}
+            </div>
 
             <div className="flex justify-end">
-              <button
-                onClick={() => setIsEditing(false)}
-                className="bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 hover:bg-gray-400 transition duration-200 flex items-center"
-              >
-                <FaTimes className="mr-2" /> {/* Ícono de cancelar */}
-                Cancelar
-              </button>
               <button
                 onClick={handleUpdate}
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200 flex items-center"
