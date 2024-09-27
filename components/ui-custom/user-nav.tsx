@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { use, useEffect } from "react";
 
 export const UserNav = () => {
   const router = useRouter();
@@ -25,8 +26,10 @@ export const UserNav = () => {
   async function handleSignOut() {
     setAuth(null);
     await signOut();
-    router.push("/dashboard");
+    router.push("/");
   }
+
+  
 
   return (
     <DropdownMenu>
