@@ -15,7 +15,7 @@ export const Logo = ({ className }: LogoProps) => {
         alt="logo"
         width={500}
         height={500}
-        className={cn("w-6 h-6 object-cover", className)}
+        className={cn("w-14 h-14 object-cover", className)}
       />
     </Link>
   );
