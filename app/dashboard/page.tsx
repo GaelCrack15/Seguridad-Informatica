@@ -12,6 +12,10 @@ import { MdDelete } from "react-icons/md";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth"; // Tu hook personalizado para la autenticación
 import { useRouter } from "next/navigation";
+import { formSchemaRegister } from "@/types/user";
+import { z } from "zod";
+import { motion } from "framer-motion";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
 
 // Define la interfaz de User
 interface User {
@@ -63,28 +67,29 @@ const DashboardPage = () => {
 
   useEffect(() => {
     // Filtrado por búsqueda
-    // Filtrado por búsqueda
-    const results = users.filter(
-      (user) =>
-        (user.full_name &&
-          user.full_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (user.role &&
-          user.role.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (user.birthdate &&
-          user.birthdate.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (user.address &&
-          user.address.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (user.phone_number &&
-          user.phone_number.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (user.gender &&
-          user.gender.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (user.terms_accepted &&
-          user.terms_accepted
-            .toString()
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()))
-    );
+    const results = users.filter((user) => {
+      return (
+        user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        false ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        false ||
+        user.role?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        false ||
+        user.birthdate?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        false ||
+        user.address?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        false ||
+        user.phone_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        false ||
+        user.gender?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        false ||
+        user.terms_accepted
+          ?.toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        false
+      );
+    });
     // Ordenar los resultados por ID
     results.sort((a, b) => a.id - b.id); // Asumiendo que `id` es un número
     setFilteredUsers(results);
@@ -305,23 +310,38 @@ const DashboardPage = () => {
       terms_accepted: true,
     };
 
-    const { response, message, user: addedUser } = await addUser(newUser);
+    try {
+      // Validar el nuevo usuario usando el esquema de Zod
+      formSchemaRegister.parse(newUser); // Esto lanzará un error si hay un problema
 
-    // Verifica que addedUser tenga un valor válido antes de usarlo
-    if (response === "success" && addedUser) {
-      setUsers([...users, addedUser]);
-      setFilteredUsers([...filteredUsers, addedUser]);
-      setNewName(""); // Limpiar el campo de nombre
-      setNewEmail(""); // Limpiar el campo de email
-      setNewPassword(""); // Limpiar el campo de contraseña
-      setNewRole(""); // Limpiar el campo de rol
-      setNewBirthdate(""); // Limpiar el campo de fecha de nacimiento
-      setNewAddress(""); // Limpiar el campo de dirección
-      setNewPhoneNumber(""); // Limpiar el campo de número de teléfono
-      setNewGender(""); // Limpiar el campo de género
-      setIsAdding(false); // Cerrar el modal de agregar
-    } else {
-      toast.error(message);
+      const { response, message, user: addedUser } = await addUser(newUser);
+
+      // Verifica que addedUser tenga un valor válido antes de usarlo
+      if (response === "success" && addedUser) {
+        setUsers([...users, addedUser]);
+        setFilteredUsers([...filteredUsers, addedUser]);
+        setNewName(""); // Limpiar el campo de nombre
+        setNewEmail(""); // Limpiar el campo de email
+        setNewPassword(""); // Limpiar el campo de contraseña
+        setNewRole(""); // Limpiar el campo de rol
+        setNewBirthdate(""); // Limpiar el campo de fecha de nacimiento
+        setNewAddress(""); // Limpiar el campo de dirección
+        setNewPhoneNumber(""); // Limpiar el campo de número de teléfono
+        setNewGender(""); // Limpiar el campo de género
+        setIsAdding(false); // Cerrar el modal de agregar
+      } else {
+        toast.error(message);
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        // Si hay errores de validación, puedes mostrar un mensaje o manejarlo como desees
+        error.errors.forEach((err) => {
+          toast.error(err.message); // Mostrar el mensaje de error
+        });
+      } else {
+        // Manejo de otros errores
+        toast.error("Ocurrió un error inesperado");
+      }
     }
   };
 
@@ -607,6 +627,19 @@ const DashboardPage = () => {
               onChange={(e) => setNewName(e.target.value)}
               className="border border-gray-300 rounded px-4 py-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            {errors.full_name && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
+              >
+                <AiOutlineExclamationCircle className="mr-1 text-red-600" />
+                <span className="text-sm font-medium">
+                  {errors.full_name.message}
+                </span>
+              </motion.div>
+            )}
 
             <input
               type="email"
