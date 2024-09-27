@@ -462,8 +462,8 @@ const DashboardPage = () => {
         />
       </div>
       {/*Tabla de usuarios*/}
-      <div className="relative w-full overflow-auto">
-        <table className="w-full caption-bottom text-sm">
+      <div className="relative w-full overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200 text-sm">
           <thead className="bg-gray-100">
             <tr>
               <th
@@ -537,35 +537,19 @@ const DashboardPage = () => {
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="bg-white divide-y divide-gray-200">
             {filteredUsers.map((user) => (
               <tr key={user.id} className="hover:bg-gray-50">
+                <td className="py-3 px-6 border-b border-gray-300">{user.id}</td>
+                <td className="py-3 px-6 border-b border-gray-300">{user.full_name}</td>
+                <td className="py-3 px-6 border-b border-gray-300">{user.email}</td>
+                <td className="py-3 px-6 border-b border-gray-300">{user.role}</td>
                 <td className="py-3 px-6 border-b border-gray-300">
-                  {user.id}
+                  {user.birthdate ? formatDate(user.birthdate.toString()) : "N/A"}
                 </td>
-                <td className="py-3 px-6 border-b border-gray-300">
-                  {user.full_name}
-                </td>
-                <td className="py-3 px-6 border-b border-gray-300">
-                  {user.email}
-                </td>
-                <td className="py-3 px-6 border-b border-gray-300">
-                  {user.role}
-                </td>
-                <td className="py-3 px-6 border-b border-gray-300">
-                  {user.birthdate
-                    ? formatDate(user.birthdate.toString())
-                    : "N/A"}
-                </td>
-                <td className="py-3 px-6 border-b border-gray-300">
-                  {user.address}
-                </td>
-                <td className="py-3 px-6 border-b border-gray-300">
-                  {user.phone_number}
-                </td>
-                <td className="py-3 px-6 border-b border-gray-300">
-                  {user.gender}
-                </td>
+                <td className="py-3 px-6 border-b border-gray-300">{user.address}</td>
+                <td className="py-3 px-6 border-b border-gray-300">{user.phone_number}</td>
+                <td className="py-3 px-6 border-b border-gray-300">{user.gender}</td>
                 <td className="py-3 px-6 border-b border-gray-300">
                   {user.terms_accepted ? "Sí" : "No"}
                 </td>
