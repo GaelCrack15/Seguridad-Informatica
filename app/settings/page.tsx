@@ -7,6 +7,7 @@ import { updateUser } from "@/actions/userActions"; // Asegúrate de que updateU
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const UserSettings = () => {
   const { auth } = useAuth();
@@ -20,6 +21,15 @@ const UserSettings = () => {
   const [gender, setGender] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (auth && (auth.role === "cliente" || auth.role === "distribuidor" || auth.role === "admin")) {
+      // No hacer nada si el usuario es un distribuidor
+    } else if (!auth) {
+      router.replace("/"); // Redirigir a la página de configuración si no
+    }
+  }, [auth, router]);
 
   // Cargar datos del usuario autenticado
   useEffect(() => {
@@ -69,6 +79,11 @@ const UserSettings = () => {
       toast.error(message);
     }
   };
+
+  // Mostrar un mensaje de carga o nada mientras se verifica el auth
+  if (!auth || (auth.role !== "admin" && auth.role !== "distribuidor" && auth.role !== "cliente")) {
+    return null; // O puedes mostrar un spinner o mensaje de acceso restringido
+  }
 
   return (
     <motion.div
