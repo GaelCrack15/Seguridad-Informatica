@@ -20,9 +20,12 @@ import { Input } from "@/components/ui/input";
 import { Loader } from "lucide-react";
 import { motion } from "framer-motion"; // Importar Framer Motion
 import { AiOutlineExclamationCircle } from "react-icons/ai";
+import CaptchaModal from "@/components/ui-custom/captcha";
 
 export const FormLogin = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isCaptchaOpen, setIsCaptchaOpen] = useState<boolean>(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchemaLogin>>({
@@ -34,6 +37,11 @@ export const FormLogin = () => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchemaLogin>) {
+    if (!captchaToken) {
+      setIsCaptchaOpen(true);
+      return;
+    }
+
     setIsLoading(true);
     const res = await signIn(values);
 
@@ -48,33 +56,22 @@ export const FormLogin = () => {
     }, 1000);
   }
 
-  // Variantes para animación
-  const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
-  };
-
-  const inputVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: { opacity: 1, scale: 1 },
-  };
-
-  const labelVariants = {
-    hidden: { opacity: 0, y: -10 },
-    visible: { opacity: 1, y: 0 },
+  const onCaptchaVerify = (token: string | null) => {
+    setCaptchaToken(token);
+    setIsCaptchaOpen(false);
+    form.handleSubmit(onSubmit)();
   };
 
   const {
     formState: { errors },
-  } = form; // Obtener los errores desde formState
+  } = form;
 
   return (
     <motion.div
       className="flex flex-col items-center justify-center p-8 bg-gradient-to-r from-blue-400 to-purple-500 shadow-lg rounded-lg"
       initial="hidden"
       animate="visible"
-      variants={containerVariants}
-      transition={{ duration: 0.5 }} // Duración de la animación del contenedor
+      transition={{ duration: 0.5 }}
     >
       <h2 className="text-3xl font-bold mb-6 text-white text-center">
         Iniciar Sesión
@@ -89,46 +86,27 @@ export const FormLogin = () => {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <motion.div
-                  variants={labelVariants}
-                  initial="hidden"
-                  animate="visible"
-                  transition={{ duration: 0.3 }}
-                >
-                  <FormLabel className="font-semibold text-white">
-                    Correo electrónico
-                  </FormLabel>
-                </motion.div>
+                <FormLabel className="font-semibold text-white">
+                  Correo electrónico
+                </FormLabel>
                 <FormControl>
-                  <motion.div
-                    variants={inputVariants}
-                    initial="hidden"
-                    animate="visible"
-                    transition={{ duration: 0.3 }}
-                  >
-                    <Input
-                      placeholder="test@test.com"
-                      type="email"
-                      disabled={isLoading}
-                      {...field}
-                      className="border-2 border-white rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 transition duration-200 text-gray-900"
-                    />
-                  </motion.div>
+                  <Input
+                    placeholder="test@test.com"
+                    type="email"
+                    disabled={isLoading}
+                    {...field}
+                    className="border-2 border-white rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 transition duration-200 text-gray-900"
+                  />
                 </FormControl>
-                {errors.email && ( // Verifica si hay un error para email
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
-                  >
+                {errors.email && (
+                  <div className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2">
                     <AiOutlineExclamationCircle className="mr-1 text-red-600" />
                     {errors.email && (
                       <span className="text-sm font-medium">
                         {errors.email.message}
                       </span>
                     )}
-                  </motion.div>
+                  </div>
                 )}
               </FormItem>
             )}
@@ -138,50 +116,32 @@ export const FormLogin = () => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <motion.div
-                  variants={labelVariants}
-                  initial="hidden"
-                  animate="visible"
-                  transition={{ duration: 0.3 }}
-                >
-                  <FormLabel className="font-semibold text-white">
-                    Contraseña
-                  </FormLabel>
-                </motion.div>
+                <FormLabel className="font-semibold text-white">
+                  Contraseña
+                </FormLabel>
                 <FormControl>
-                  <motion.div
-                    variants={inputVariants}
-                    initial="hidden"
-                    animate="visible"
-                    transition={{ duration: 0.3, delay: 0.1 }}
-                  >
-                    <Input
-                      placeholder="*********"
-                      type="password"
-                      disabled={isLoading}
-                      {...field}
-                      className="border-2 border-white rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 transition duration-200 text-gray-900"
-                    />
-                  </motion.div>
+                  <Input
+                    placeholder="*********"
+                    type="password"
+                    disabled={isLoading}
+                    {...field}
+                    className="border-2 border-white rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 transition duration-200 text-gray-900"
+                  />
                 </FormControl>
-                {errors.password && ( // Verifica si hay un error para password
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
-                  >
+                {errors.password && (
+                  <div className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2">
                     <AiOutlineExclamationCircle className="mr-1 text-red-600" />
                     {errors.password && (
                       <span className="text-sm font-medium">
                         {errors.password.message}
                       </span>
                     )}
-                  </motion.div>
+                  </div>
                 )}
               </FormItem>
             )}
           />
+
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -198,6 +158,13 @@ export const FormLogin = () => {
           </motion.div>
         </form>
       </Form>
+
+      {/* Modal para el captcha */}
+      <CaptchaModal
+        isOpen={isCaptchaOpen}
+        onClose={() => setIsCaptchaOpen(false)}
+        onCaptchaVerify={onCaptchaVerify}
+      />
     </motion.div>
   );
 };
