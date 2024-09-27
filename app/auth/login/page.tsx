@@ -15,6 +15,13 @@ const LoginPage = () => {
           </Link>
         </p>
       </div>
+      <div className="mt-5">
+        <p className="text-center text-muted-foreground">
+          <Link href="/" className="font-medium underline">
+            Volver
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };
