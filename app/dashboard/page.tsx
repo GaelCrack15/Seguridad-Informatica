@@ -1,3 +1,4 @@
+// Dashboard
 "use client"; // Asegúrate de tener esto al inicio del archivo
 
 import React, { useEffect, useState, useCallback } from "react";
