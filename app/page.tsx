@@ -53,7 +53,7 @@ export default function HomePage() {
                 </Link>
                 <Link href="/auth/login">
                   <Button className="bg-gray-400 hover:bg-gray-500 text-white rounded-full text-lg px-8 py-4 ml-5 inline-flex items-center justify-center transition-all duration-300 transform hover:scale-105">
-                    Iniciar sesión
+                    Login
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
@@ -181,7 +181,7 @@ export default function HomePage() {
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-white">Políticas</h3>
+              <h3 className="text-lg font-semibold text-white">Terms and conditions</h3>
               <div className="mt-2 flex justify-center space-x-4">
                 <ul className="mt-2 text-gray-400">
                   <li className="text-gray-400 hover:text-white">

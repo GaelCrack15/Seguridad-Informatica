@@ -501,16 +501,16 @@ const DashboardPage = () => {
     return null; // O puedes mostrar un spinner o mensaje de acceso restringido
   }
 
-  // Renderiza usuarios actuales
+  // Renderiza usuarios actuales, modal
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Gestion de Usuarios</h1>
+      <h1 className="text-2xl font-bold mb-4">Gestión de Usuarios</h1>
 
       {/* Botón para agregar nuevo usuario */}
       <div className="flex justify-between items-center mb-4">
         <button
-           onClick={openAddUserModal}
-          className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-400"
+          onClick={() => setIsAdding(true)}
+          className="bg-transparent hover:bg-black hover:text-white text-black border border-black font-semibold px-4 py-3 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-black focus:bg-black focus:text-white"
         >
           Agregar Usuario
         </button>
@@ -524,8 +524,8 @@ const DashboardPage = () => {
         />
       </div>
       {/*Tabla de usuarios*/}
-      <div className="relative w-full overflow-auto">
-        <table className="w-full caption-bottom text-sm">
+      <div className="relative w-full overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200 text-sm">
           <thead className="bg-gray-100">
             <tr>
               <th
@@ -599,35 +599,19 @@ const DashboardPage = () => {
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="bg-white divide-y divide-gray-200">
             {filteredUsers.map((user) => (
               <tr key={user.id} className="hover:bg-gray-50">
+                <td className="py-3 px-6 border-b border-gray-300">{user.id}</td>
+                <td className="py-3 px-6 border-b border-gray-300">{user.full_name}</td>
+                <td className="py-3 px-6 border-b border-gray-300">{user.email}</td>
+                <td className="py-3 px-6 border-b border-gray-300">{user.role}</td>
                 <td className="py-3 px-6 border-b border-gray-300">
-                  {user.id}
+                  {user.birthdate ? formatDate(user.birthdate.toString()) : "N/A"}
                 </td>
-                <td className="py-3 px-6 border-b border-gray-300">
-                  {user.full_name}
-                </td>
-                <td className="py-3 px-6 border-b border-gray-300">
-                  {user.email}
-                </td>
-                <td className="py-3 px-6 border-b border-gray-300">
-                  {user.role}
-                </td>
-                <td className="py-3 px-6 border-b border-gray-300">
-                  {user.birthdate
-                    ? formatDate(user.birthdate.toString())
-                    : "N/A"}
-                </td>
-                <td className="py-3 px-6 border-b border-gray-300">
-                  {user.address}
-                </td>
-                <td className="py-3 px-6 border-b border-gray-300">
-                  {user.phone_number}
-                </td>
-                <td className="py-3 px-6 border-b border-gray-300">
-                  {user.gender}
-                </td>
+                <td className="py-3 px-6 border-b border-gray-300">{user.address}</td>
+                <td className="py-3 px-6 border-b border-gray-300">{user.phone_number}</td>
+                <td className="py-3 px-6 border-b border-gray-300">{user.gender}</td>
                 <td className="py-3 px-6 border-b border-gray-300">
                   {user.terms_accepted ? "Sí" : "No"}
                 </td>
@@ -734,7 +718,7 @@ const DashboardPage = () => {
                 placeholder="Nombre"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black"
               />
               {errors.full_name && (
                 <motion.div
@@ -757,7 +741,7 @@ const DashboardPage = () => {
                 placeholder="Email"
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
-                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black"
               />
               {errors.email && (
                 <motion.div
@@ -773,29 +757,13 @@ const DashboardPage = () => {
             </div>
 
             <div className="mb-4">
-              <div className="relative">
-                {/* Campo para Contraseña */}
-                <input
-                  type={showPassword ? "text" : "password"} // Cambia entre "text" y "password" según el estado
-                  placeholder="Contraseña"
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-
-                {/* Botón para mostrar/ocultar contraseña */}
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
-                  onClick={() => setShowPassword(!showPassword)} // Alternar visibilidad
-                >
-                  {showPassword ? (
-                    <AiOutlineEyeInvisible size={20} />
-                  ) : (
-                    <AiOutlineEye size={20} />
-                  )}
-                </button>
-              </div>
-
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black"
+              />
               {errors.password && (
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
@@ -815,7 +783,7 @@ const DashboardPage = () => {
                 placeholder="Rol"
                 value={newRole}
                 onChange={(e) => setNewRole(e.target.value)}
-                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black"
               />
               {errors.role && (
                 <motion.div
@@ -836,7 +804,7 @@ const DashboardPage = () => {
                 placeholder="Fecha de Nacimiento"
                 value={newBirthdate || ""}
                 onChange={(e) => setNewBirthdate(e.target.value)}
-                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black"
               />
               {errors.birthdate && (
                 <motion.div
@@ -859,7 +827,7 @@ const DashboardPage = () => {
                 placeholder="Dirección"
                 value={newAddress || ""}
                 onChange={(e) => setNewAddress(e.target.value)}
-                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black"
               />
               {errors.address && (
                 <motion.div
@@ -880,7 +848,7 @@ const DashboardPage = () => {
                 placeholder="Número de Teléfono"
                 value={newPhoneNumber || ""}
                 onChange={(e) => setNewPhoneNumber(e.target.value)}
-                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black"
               />
               {errors.phone_number && (
                 <motion.div
@@ -902,7 +870,7 @@ const DashboardPage = () => {
                 title="Género"
                 value={newGender || ""}
                 onChange={(e) => setNewGender(e.target.value)}
-                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black"
               >
                 <option value="" disabled>
                   Seleccionar Género
@@ -927,7 +895,7 @@ const DashboardPage = () => {
             <div className="flex justify-end">
               <button
                 onClick={handleAddUser}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
+                className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
               >
                 Agregar
               </button>

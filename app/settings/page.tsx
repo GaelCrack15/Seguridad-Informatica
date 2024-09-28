@@ -87,29 +87,29 @@ const UserSettings = () => {
 
   return (
     <motion.div
-      className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg"
+      className="max-w-md mx-auto p-4 bg-white rounded-lg shadow-xl overflow-y-auto max-h-screen"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.3 }}
     >
-      <h2 className="text-2xl font-bold mb-4 text-center">
+      <h2 className="text-xl font-bold mb-2 text-center">
         Configuración de Usuario
       </h2>
       {loading && (
-        <div className="flex items-center justify-center mb-4">
+        <div className="flex items-center justify-center mb-2">
           <FaSpinner className="animate-spin text-blue-500 mr-2" size={24} />
           <span>Cargando...</span>
         </div>
       )}
-      {error && <div className="text-red-500 mb-4">{error}</div>}
-      <form onSubmit={handleUpdate} className="space-y-4">
+      {error && <div className="text-red-500 mb-2">{error}</div>}
+      <form onSubmit={handleUpdate} className="space-y-2">
         <input
           type="text"
           placeholder="Nombre"
           value={full_name}
           onChange={(e) => setName(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black transition duration-200"
           required
         />
         <input
@@ -117,48 +117,48 @@ const UserSettings = () => {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black transition duration-200"
           required
         />
         <input
           type="password"
           placeholder="Contraseña"
           onChange={(e) => setPassword(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black transition duration-200"
         />
         <input
           type="text"
           placeholder="Rol"
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black transition duration-200"
         />
         <input
           type="date"
           placeholder="Fecha de Nacimiento"
           value={birthdate}
           onChange={(e) => setBirthdate(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black transition duration-200"
         />
         <input
           type="text"
           placeholder="Dirección"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black transition duration-200"
         />
         <input
           type="tel"
           placeholder="Número de Teléfono"
           value={phone_number}
           onChange={(e) => setPhoneNumber(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black transition duration-200"
         />
         <select
           title="Género"
           value={gender}
           onChange={(e) => setGender(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+          className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-black transition duration-200"
         >
           <option value="">Seleccionar Género</option>
           <option value="male">Masculino</option>
