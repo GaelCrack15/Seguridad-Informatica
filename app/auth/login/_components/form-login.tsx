@@ -19,13 +19,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Loader } from "lucide-react";
 import { motion } from "framer-motion";
-import { AiOutlineExclamationCircle } from "react-icons/ai";
+import { AiOutlineExclamationCircle, AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import CaptchaModal from "@/components/ui-custom/captcha";
 
 export const FormLogin = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isCaptchaOpen, setIsCaptchaOpen] = useState<boolean>(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchemaLogin>>({
@@ -40,28 +41,28 @@ export const FormLogin = () => {
     setIsLoading(true);
 
     if (!captchaToken) {
-      setIsCaptchaOpen(true); // Abre el modal si no hay Captcha token
-      setIsLoading(false); // Deten la animación si no hay Captcha
+      setIsCaptchaOpen(true);
+      setIsLoading(false);
       return;
     }
 
-    const res = await signIn(values); // Llamada para iniciar sesión
+    const res = await signIn(values);
 
     if (res?.response === "success") {
-      router.push("/dashboard"); // Redirige al dashboard si es exitoso
+      router.push("/dashboard");
     } else {
-      toast.error(res?.message); // Muestra mensaje de error
+      toast.error(res?.message);
     }
 
-    setIsLoading(false); // Deten la animación de carga
+    setIsLoading(false);
   };
 
   // Verificación del Captcha
   const handleCaptchaSubmit = (token: string | null) => {
     if (token) {
-      setCaptchaToken(token); // Guarda el token del Captcha
-      setIsCaptchaOpen(false); // Cierra el modal
-      form.handleSubmit(onSubmit)(); // Hace submit al formulario
+      setCaptchaToken(token);
+      setIsCaptchaOpen(false);
+      form.handleSubmit(onSubmit)();
     } else {
       toast.error("Captcha no verificado. Inténtalo de nuevo.");
     }
@@ -130,13 +131,26 @@ export const FormLogin = () => {
                   Contraseña
                 </FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="*********"
-                    type="password"
-                    disabled={isLoading}
-                    {...field}
-                    className="border-2 border-white rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 transition duration-200 text-gray-900"
-                  />
+                  <div className="relative">
+                    <Input
+                      placeholder="*********"
+                      type={showPassword ? "text" : "password"}
+                      disabled={isLoading}
+                      {...field}
+                      className="border-2 border-white rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 transition duration-200 text-gray-900"
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <AiOutlineEyeInvisible size={20} />
+                      ) : (
+                        <AiOutlineEye size={20} />
+                      )}
+                    </button>
+                  </div>
                 </FormControl>
                 {errors.password && (
                   <div className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2">
@@ -167,11 +181,10 @@ export const FormLogin = () => {
         </form>
       </Form>
 
-      {/* Modal para el captcha */}
       <CaptchaModal
         isOpen={isCaptchaOpen}
-        onClose={handleCaptchaClose} // Usa el onClose modificado
-        onCaptchaVerify={handleCaptchaSubmit} // Usa el método de verificación del captcha
+        onClose={handleCaptchaClose}
+        onCaptchaVerify={handleCaptchaSubmit}
       />
     </motion.div>
   );

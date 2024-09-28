@@ -24,13 +24,14 @@ import ModalPrivacy from "@/components/ui-custom/privacy";
 import ModalTerms from "@/components/ui-custom/terms";
 import { motion } from "framer-motion"; // Importar Framer Motion
 import { FaUser } from "react-icons/fa";
-import { AiOutlineExclamationCircle } from "react-icons/ai"; // Ícono de advertencia
+import { AiOutlineExclamationCircle, AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"; // Ícono de advertencia
 
 export const FormRegister = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isPrivacyModalOpen, setPrivacyModalOpen] = useState(false);
   const [isTermsModalOpen, setTermsModalOpen] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const handleAcceptTerms = () => {
     setIsTermsAccepted(true);
@@ -225,9 +226,8 @@ export const FormRegister = () => {
             render={({ field }) => (
               <FormItem>
                 <motion.div
-                  variants={labelVariants}
-                  initial="hidden"
-                  animate="visible"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
                 >
                   <FormLabel className="font-semibold text-white">
@@ -236,21 +236,32 @@ export const FormRegister = () => {
                 </motion.div>
                 <FormControl>
                   <motion.div
-                    variants={inputVariants}
-                    initial="hidden"
-                    animate="visible"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.3, delay: 0.1 }}
+                    className="relative"
                   >
                     <Input
                       placeholder="*********"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       disabled={isLoading}
                       {...field}
                       className="border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 p-2"
                     />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <AiOutlineEyeInvisible size={20} />
+                      ) : (
+                        <AiOutlineEye size={20} />
+                      )}
+                    </button>
                   </motion.div>
                 </FormControl>
-                {errors.password && ( // Verifica si hay un error para password
+                {errors.password && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -258,11 +269,9 @@ export const FormRegister = () => {
                     className="flex items-center text-red-600 mt-1 bg-red-50 border border-red-300 rounded-md p-2"
                   >
                     <AiOutlineExclamationCircle className="mr-1 text-red-600" />
-                    {errors.password && (
-                      <span className="text-sm font-medium">
-                        {errors.password.message}
-                      </span>
-                    )}
+                    <span className="text-sm font-medium">
+                      {errors.password.message}
+                    </span>
                   </motion.div>
                 )}
               </FormItem>

@@ -1,3 +1,4 @@
+// Dashboard
 "use client"; // Asegúrate de tener esto al inicio del archivo
 
 import React, { useEffect, useState, useCallback } from "react";
@@ -14,7 +15,8 @@ import { useAuth } from "@/hooks/use-auth"; // Tu hook personalizado para la aut
 import { useRouter } from "next/navigation";
 import { formSchemaEdit, formSchemaRegister } from "@/types/user";
 import { motion } from "framer-motion";
-import { AiOutlineClose, AiOutlineExclamationCircle } from "react-icons/ai";
+import { AiOutlineClose, AiOutlineExclamationCircle, AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import ConfirmationModal from "@/components/ui-custom/confirm";
 
 // Define la interfaz de User
 interface User {
@@ -45,6 +47,10 @@ const DashboardPage = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0);
   const [errors, setErrors] = useState<{ [key: string]: string }>({}); // Estado para los errores
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<number | null>(null);
+  const [showPassword, setShowPassword] = useState(false); 
+
 
   // Variables de paginación
   const indexOfLastUser = currentPage * rowsPerPage;
@@ -239,21 +245,74 @@ const DashboardPage = () => {
     );
   }
 
+  // Función para manejar la apertura del modal de agregar usuario
+  const openAddUserModal = () => {
+    // Limpiar campos y errores al abrir el modal
+    setNewName("");
+    setNewEmail("");
+    setNewPassword("");
+    setNewRole("");
+    setNewBirthdate("");
+    setNewAddress("");
+    setNewPhoneNumber("");
+    setNewGender("");
+    setErrors({}); // Limpiar los errores
+
+    setIsAdding(true); // Abrir el modal
+  };
+
+  // Función para manejar el cierre del modal
+  const closeAddUserModal = () => {
+    setIsAdding(false);
+    setErrors({}); // Limpiar los errores cuando se cierra el modal
+  };
+
+  const openEditUserModal = (user: User) => {
+    // Establecer el usuario actual a editar
+    setCurrentUser(user);
+    setName(user.full_name || "");
+    setEmail(user.email);
+    setRole(user.role || "");
+    setBirthdate(user.birthdate || "");
+    setAddress(user.address || "");
+    setPhoneNumber(user.phone_number || "");
+    setGender(user.gender || "");
+    setTermsAccepted(user.terms_accepted || false);
+    setPassword(""); // Limpiar el campo de la contraseña
+    setErrors({}); // Limpiar los errores
+  
+    setIsEditing(true); // Abrir el modal
+  };
+  
+  // Función para cerrar el modal de edición
+  const closeEditUserModal = () => {
+    setIsEditing(false);
+    setErrors({}); // Limpiar los errores cuando se cierra el modal
+  };
+
   const handleEdit = (user: User) => {
     setCurrentUser(user);
     setIsEditing(true); // Abrir el modal
   };
 
-  const handleDelete = async (id: number) => {
-    console.log("Eliminar usuario con ID:", id);
-    const { response, message } = await deleteUser(id);
-    if (response === "success") {
-      setUsers(users.filter((user) => user.id !== id));
-      setFilteredUsers(filteredUsers.filter((user) => user.id !== id)); // Actualiza la lista filtrada
-    } else {
-      toast.error(message);
-    }
+  const handleDelete = (id: number) => {
+    setUserToDelete(id); // Establece el usuario que se va a eliminar
+    setIsModalOpen(true); // Abre el modal
   };
+  
+  const confirmDelete = async () => {
+    if (userToDelete !== null) {
+      const { response, message } = await deleteUser(userToDelete);
+      if (response === "success") {
+        setUsers(users.filter((user) => user.id !== userToDelete));
+        setFilteredUsers(filteredUsers.filter((user) => user.id !== userToDelete));
+        setIsModalOpen(false); // Cierra el modal
+        setUserToDelete(null); // Reinicia el usuario a eliminar
+      } else {
+        toast.error(message);
+      }
+    }
+  };  
 
   const handleUpdate = async () => {
     if (currentUser) {
@@ -329,35 +388,36 @@ const DashboardPage = () => {
       full_name: newName,
       email: newEmail,
       role: newRole,
-      password,
+      password: newPassword, // Asegúrate de usar newPassword
       birthdate: newBirthdate || undefined,
       address: newAddress || undefined,
       phone_number: newPhoneNumber || undefined,
       gender: newGender || undefined,
       terms_accepted: true,
     };
-
+  
     try {
       // Validar el nuevo usuario usando el esquema de Zod
       const result = formSchemaRegister.safeParse(newUser);
-
+  
       if (!result.success) {
         // Si hay errores, establecerlos en el estado
         const fieldErrors = result.error.errors.reduce((acc, error) => {
           acc[error.path[0]] = error.message; // Mapear el error al campo correspondiente
           return acc;
         }, {} as { [key: string]: string });
-
-        setErrors(fieldErrors);
+  
+        setErrors(fieldErrors); // Actualizar el estado de los errores
         return; // Salir si hay errores
       }
-
+  
       const { response, message, user: addedUser } = await addUser(newUser);
-
+  
       if (response === "success" && addedUser) {
-        setUsers([...users, addedUser]);
-        setFilteredUsers([...filteredUsers, addedUser]);
-        // Reiniciar todos los campos después de agregar exitosamente
+        setUsers([...users, addedUser]); // Agregar el nuevo usuario a la lista
+        setFilteredUsers([...filteredUsers, addedUser]); // Actualizar la lista filtrada
+  
+        // Limpiar los campos después de agregar exitosamente
         setNewName("");
         setNewEmail("");
         setNewPassword(""); // Limpiar la nueva contraseña
@@ -367,15 +427,17 @@ const DashboardPage = () => {
         setNewPhoneNumber("");
         setNewGender("");
         setIsAdding(false);
-        setErrors({}); // Limpiar errores al agregar con éxito
+        setErrors({}); // Limpiar errores
+        toast.success("Usuario agregado correctamente");
       } else {
-        toast.error(message);
+        toast.error(message); // Mostrar mensaje de error
       }
     } catch (error) {
       console.error(error); // Usar el error de alguna manera
       toast.error("Ocurrió un error inesperado");
     }
   };
+  
 
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -561,7 +623,7 @@ const DashboardPage = () => {
                 </td>
                 <td className="py-3 px-6 flex flex-col items-center space-y-2">
                   <button
-                    onClick={() => handleEdit(user)}
+                    onClick={() => openEditUserModal(user)}
                     className="w-full text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-2 transition duration-300 ease-in-out flex items-center justify-center"
                   >
                     <FaEdit className="mr-2" size={20} /> Editar
@@ -573,6 +635,11 @@ const DashboardPage = () => {
                   >
                     <MdDelete className="mr-2" size={20} /> Eliminar
                   </button>
+                  <ConfirmationModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onConfirm={confirmDelete}
+                  />
                 </td>
               </tr>
             ))}
@@ -639,7 +706,7 @@ const DashboardPage = () => {
             {/* Ícono de cerrar en la esquina superior derecha */}
             <button
               title="Cerrar"
-              onClick={() => setIsAdding(false)}
+              onClick={closeAddUserModal}
               className="p-5 absolute top-2 right-2 text-gray-500 hover:text-gray-700"
             >
               <AiOutlineClose size={24} />
@@ -846,7 +913,7 @@ const DashboardPage = () => {
             {/* Ícono de cerrar en la esquina superior derecha */}
             <button
               title="Cerrar"
-              onClick={() => setIsEditing(false)}
+              onClick={closeEditUserModal}
               className="p-5 absolute top-2 right-2 text-gray-500 hover:text-gray-700"
             >
               <AiOutlineClose size={24} />
@@ -900,12 +967,29 @@ const DashboardPage = () => {
 
             {/* Campo para Contraseña */}
             <div className="mb-4">
-              <input
-                type="password"
-                placeholder="Contraseña"
-                onChange={(e) => setPassword(e.target.value)}
-                className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <div className="relative">
+                {/* Campo para Contraseña */}
+                <input
+                  type={showPassword ? "text" : "password"} // Cambia entre "text" y "password" según el estado
+                  placeholder="Contraseña"
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="border border-gray-300 rounded px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+
+                {/* Botón para mostrar/ocultar contraseña */}
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
+                  onClick={() => setShowPassword(!showPassword)} // Alternar visibilidad
+                >
+                  {showPassword ? (
+                    <AiOutlineEyeInvisible size={20} />
+                  ) : (
+                    <AiOutlineEye size={20} />
+                  )}
+                </button>
+              </div>
+
               {errors.password && (
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
