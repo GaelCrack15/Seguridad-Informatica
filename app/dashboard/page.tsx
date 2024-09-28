@@ -501,7 +501,7 @@ const DashboardPage = () => {
     return null; // O puedes mostrar un spinner o mensaje de acceso restringido
   }
 
-  // Renderiza usuarios actuales
+  // Renderiza usuarios actuales, modal
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Gestión de Usuarios</h1>
