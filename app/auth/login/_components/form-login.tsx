@@ -19,8 +19,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Loader } from "lucide-react";
 import { motion } from "framer-motion";
-import { AiOutlineExclamationCircle, AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import {
+  AiOutlineExclamationCircle,
+  AiOutlineEye,
+  AiOutlineEyeInvisible,
+} from "react-icons/ai";
 import CaptchaModal from "@/components/ui-custom/captcha";
+import { AiOutlineGoogle } from "react-icons/ai"; // Asegúrate de tener la librería instalada
+import { signIn as signInNext } from "next-auth/react";
 
 export const FormLogin = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -39,21 +45,26 @@ export const FormLogin = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchemaLogin>) => {
     setIsLoading(true);
-
+  
     if (!captchaToken) {
       setIsCaptchaOpen(true);
       setIsLoading(false);
       return;
     }
-
-    const res = await signIn(values);
-
-    if (res?.response === "success") {
-      router.push("/dashboard");
+  
+    const res = await signInNext("credentials", {
+      email: values.email,
+      password: values.password,
+      redirect: false,
+    });
+  
+    if (res?.error) {
+      toast.error(res.error);  // Enviar el error si es que hay
     } else {
-      toast.error(res?.message);
+      // Redirigir en caso de éxito
+      router.push("/dashboard");
     }
-
+  
     setIsLoading(false);
   };
 
@@ -94,6 +105,22 @@ export const FormLogin = () => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-5 w-full"
         >
+          {/* Agregar botón de inicio de sesión con Google */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.2, delay: 0.2 }}
+          >
+            <Button
+              type="button"
+              className="w-full mt-4 bg-blue-600 text-white hover:bg-blue-700 transition duration-200"
+              onClick={() => signInNext("google")}
+            >
+              <AiOutlineGoogle className="mr-2" />
+              Iniciar sesión con Google
+            </Button>
+          </motion.div>
+
           <FormField
             control={form.control}
             name="email"
