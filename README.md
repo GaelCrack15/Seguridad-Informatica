@@ -2,7 +2,7 @@
 
 Este es un proyecto de **Seguridad Informática** creado con [Next.js](https://nextjs.org) y utilizando **ORM Drizzle** y **Neon Tech**.
 
-## Getting Started
+## Getting Started 
 
 Primero, instala las dependencias:
 
