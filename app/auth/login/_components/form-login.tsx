@@ -114,21 +114,6 @@ export const FormLogin = () => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-5 w-full"
         >
-          {/* Agregar botón de inicio de sesión con Google */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.2, delay: 0.2 }}
-          >
-            <Button
-              type="button"
-              className="w-full mt-4 bg-blue-600 text-white hover:bg-blue-700 transition duration-200"
-              onClick={() => signInNext("google")}
-            >
-              <AiOutlineGoogle className="mr-2" />
-              Iniciar sesión con Google
-            </Button>
-          </motion.div>
 
           <FormField
             control={form.control}
