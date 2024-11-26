@@ -25,12 +25,13 @@ import {
   AiOutlineEyeInvisible,
 } from "react-icons/ai";
 import CaptchaModal from "@/components/ui-custom/captcha";
-import { AiOutlineGoogle } from "react-icons/ai"; // Asegúrate de tener la librería instalada
+import { AiOutlineGoogle } from "react-icons/ai";
 import { signIn as signInNext } from "next-auth/react";
 
 function loginWithGitHub() {
-  const GITHUB_CLIENT_ID = "Ov23li3w91usHIwvaBE6"; // Asegúrate de que sea el correcto
+  const GITHUB_CLIENT_ID = "Ov23li3w91usHIwvaBE6";
   const REDIRECT_URI = "https://adminify-xi.vercel.app/api/auth/github/callback";
+  console.log(REDIRECT_URI);
 
   window.location.assign(
     `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=read:user user:email`
