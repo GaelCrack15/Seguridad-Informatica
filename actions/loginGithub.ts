@@ -26,6 +26,8 @@ export const githubLogin = async (code: string) => {
       }
     );
 
+    console.log('GitHub response:', response.data);
+
     const { access_token } = response.data;
 
     if (!access_token) {
