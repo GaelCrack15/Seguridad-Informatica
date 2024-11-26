@@ -30,7 +30,7 @@ import { signIn as signInNext } from "next-auth/react";
 
 function loginWithGitHub() {
   const GITHUB_CLIENT_ID = "Ov23li3w91usHIwvaBE6"; // Asegúrate de que sea el correcto
-  const REDIRECT_URI = "https://adminify.vercel.app/api/auth/github/callback";
+  const REDIRECT_URI = "https://adminify-xi.vercel.app/api/auth/github/callback";
 
   window.location.assign(
     `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=read:user user:email`
