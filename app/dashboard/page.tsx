@@ -9,7 +9,7 @@ import {
   addUser,
 } from "@/actions/userActions"; // Asegúrate de que addUser esté disponible
 import { FaCheck, FaEdit, FaSpinner } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdEmail } from "react-icons/md";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth"; // Tu hook personalizado para la autenticación
 import { useRouter } from "next/navigation";
@@ -49,6 +49,7 @@ const DashboardPage = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({}); // Estado para los errores
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<number | null>(null);
+  const [userToEmail, setUserToEmail] = useState<number | null>(null);
   const [showPassword, setShowPassword] = useState(false); 
 
 
@@ -299,6 +300,31 @@ const DashboardPage = () => {
     setUserToDelete(id); // Establece el usuario que se va a eliminar
     setIsModalOpen(true); // Abre el modal
   };
+
+  const handleEmail = async (user: User) => {
+    try {
+      const response = await fetch('/api/auth/github/callback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user }), // Enviar el objeto completo
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Correo enviado con éxito:', data);
+      } else {
+        const errorData = await response.json();
+        console.error('Error al enviar correo:', errorData.error);
+      }
+    } catch (error) {
+      console.error('Error de red al enviar correo:', error);
+    }
+  };
+  
+  
+  
   
   const confirmDelete = async () => {
     if (userToDelete !== null) {
@@ -640,6 +666,13 @@ const DashboardPage = () => {
                     onClose={() => setIsModalOpen(false)}
                     onConfirm={confirmDelete}
                   />
+                  <button
+                    onClick={() => handleEmail(user)}
+                    className="w-full text-white bg-green-400 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 transition duration-300 ease-in-out flex items-center justify-center"
+                  >
+                    <MdEmail className="mr-2" size={20} /> Enviar correo
+                  </button>
+
                 </td>
               </tr>
             ))}

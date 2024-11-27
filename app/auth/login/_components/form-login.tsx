@@ -26,7 +26,6 @@ import {
 } from "react-icons/ai";
 import CaptchaModal from "@/components/ui-custom/captcha";
 import { AiOutlineGoogle } from "react-icons/ai";
-import { signIn as signInNext } from "next-auth/react";
 
 function loginWithGitHub() {
   const GITHUB_CLIENT_ID = "Ov23li3w91usHIwvaBE6";
@@ -63,14 +62,13 @@ export const FormLogin = () => {
       return;
     }
   
-    const res = await signInNext("credentials", {
+    const res = await signIn( {
       email: values.email,
       password: values.password,
-      redirect: false,
     });
   
-    if (res?.error) {
-      toast.error(res.error);  // Enviar el error si es que hay
+    if (res?.response === "error") {
+      toast.error(res.response);  // Enviar el error si es que hay
     } else {
       // Redirigir en caso de éxito
       router.push("/dashboard");
